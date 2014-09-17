@@ -777,7 +777,6 @@ define([
                         return xScale(d.x);
                     })
                     .y0(function (d) {
-                        //                    return yScale(d.y0);
                         return yScale(d.y0);
                     })
                     .y1(function (d) {
@@ -789,7 +788,7 @@ define([
 
                 // shade area
                 areaSvg = svg.select('.chart-group').selectAll('path.area')
-                    .data(stackedData);
+                    .data(stackedData, function(d) { return d.name });
 
                 areaSvg.enter()
                     .append('svg:path')
@@ -800,7 +799,7 @@ define([
 
                 areaSvg.exit()
                     .transition()
-                    .duration(500)
+                    .duration(transitionDuration)
                     .ease('linear')
                     .style('opacity', 0)
                     .remove();
@@ -1245,7 +1244,7 @@ define([
                     titleSvg.exit().transition().duration(200).remove();
                     // transition
                     titleSvg.transition()
-                        .duration(300)
+                        .duration(transitionDuration)
                         .text(title)
                         .style('text-anchor', 'middle');
 
@@ -1259,7 +1258,7 @@ define([
                     yTitleSvg.exit().transition().duration(200).remove();
                     // transition
                     yTitleSvg.transition()
-                        .duration(300)
+                        .duration(transitionDuration)
                         .text(yAxis1Title)
                         .attr('x', -yScale((maxY - minY) / 2))
                         .attr('y', -(margin.left * 0.7));
@@ -1273,7 +1272,7 @@ define([
                     xTitleSvg.exit().transition().duration(200).remove();
                     // transition
                     xTitleSvg.transition()
-                        .duration(300)
+                        .duration(transitionDuration)
                         .text(xAxisTitle)
                         .attr('y', chartHeight + margin.bottom * 0.9)
                         .attr('x', chartWidth / 2);
@@ -1466,7 +1465,7 @@ define([
                 legendRect.exit().transition().duration(200).attr('width', 0).remove();
                 // transition
                 legendRect.transition()
-                    .duration(300)
+                    .duration(transitionDuration)
                     .attr('x', function (d, i) {
                         return xPosition(i);
                     })
