@@ -71,8 +71,8 @@ define([
         left: 100,
         right: 30
     };
-//    var stackedArea = d3.ninja.stackedArea();
-    var stackedArea = ninjaCharts.stackedArea();
+    var stackedArea = d3.ninja.stackedArea();
+//    var stackedArea = ninjaCharts.stackedArea();
     stackedArea.title('Customer Category');
     stackedArea.yAxis1Title('Count');
     stackedArea.xAxisTitle('Date');
