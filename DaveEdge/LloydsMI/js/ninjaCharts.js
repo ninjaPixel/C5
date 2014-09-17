@@ -1,3 +1,5 @@
+// Version 0.1.2
+// added require.js
 // Version 0.1.1
 // added stacked area chart
 // Version 0.1
@@ -5,7 +7,25 @@
 
 /// <reference path='d3.v3.js' />
 
+require.config({
+    config: {
+        moment: {
+            noGlobal: true
+        }
+    },
+    paths: {
+        'moment': '../../js/moment.v2.8.1.min',
+        'moment-timezone': '../../js/moment-timezone.v0.2.1.min',
+        'moment-timezone-data': '../../js/moment-timezone-with-data-2010-2020',
+        'd3': 'd3.v3.4.11.min'
+    }
+});
 
+define([
+    // Load our app module and pass it to our definition function
+    'd3'
+], function (d3) {
+console.log('ninjaCharts loaded. Using d3 version', d3.version);
 
 // setup our charts in the d3.ninja namespace
 d3.ninja = {};
@@ -1723,3 +1743,5 @@ d3.ninja.horizontalLegend = function module() {
     d3.rebind(exports, dispatch, 'on');
     return exports;
 };
+    
+});
