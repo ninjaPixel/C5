@@ -18,11 +18,11 @@ require.config({
     }
 });
 
-define([
+require([
     // Load our app module and pass it to our definition function
     'd3', 'ninjaCharts'
 ], function (d3) {
-
+console.log(d3.version);
 
     var parseDate = d3.time.format('%e/%m/%y').parse;
     lloydsJSON.forEach(function (d) {
@@ -70,6 +70,7 @@ var     margin= {
         right: 30
     };
     var stackedArea = d3.ninja.stackedArea();
+//var stackedArea = ninjaCharts.stackedArea();
     stackedArea.title('Customer Category');
     stackedArea.yAxis1Title('Count');
     stackedArea.xAxisTitle('Date');
@@ -89,13 +90,14 @@ stackedArea.margin(margin);
     for (var count = 0; count < len; count++) {
         legendData.push({
             name: properties[count],
-            colour: colors[count],
+            color: colors[count],
             opacity: selectedOpacity,
             textColor : textColors[count]
         });
     }
 
     var legend = d3.ninja.horizontalLegendRoundedCorners();
+//var legend = ninjaCharts.horizontalLegendRoundedCorners();
     var legendMargin = {
         top: 10,
         bottom: 0,

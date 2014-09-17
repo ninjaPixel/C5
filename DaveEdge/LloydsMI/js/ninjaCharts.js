@@ -1460,7 +1460,7 @@ d3.ninja.horizontalLegendRoundedCorners = function module() {
                 .attr('ry', 2)
                 .attr('rx', 2)
                 .style('fill', function (d) {
-                    return d.colour;
+                    return d.color;
                 });
 
             var legendText = legendSvg.selectAll('text.legend')
