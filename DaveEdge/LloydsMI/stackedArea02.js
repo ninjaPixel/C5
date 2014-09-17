@@ -24,7 +24,6 @@ define([
     // Load our app module and pass it to our definition function
     'd3', 'ninjaCharts'
 ], function (d3, ninjaCharts) {
-    console.log(d3.version);
 
     var parseDate = d3.time.format('%e/%m/%y').parse;
     lloydsJSON.forEach(function (d) {
@@ -72,7 +71,6 @@ define([
         right: 30
     };
     var stackedArea = d3.ninja.stackedArea();
-//    var stackedArea = ninjaCharts.stackedArea();
     stackedArea.title('Customer Category');
     stackedArea.yAxis1Title('Count');
     stackedArea.xAxisTitle('Date');
@@ -111,6 +109,10 @@ define([
     legend.itemWidth(650);
     legend.fontColor('#525252');
     legend.fontSize(20);
+legend.on('click', function(d) {
+    console.log('Legend Click:', d);
+});
+
     d3.select('#legend')
         .datum(legendData)
         .call(legend);

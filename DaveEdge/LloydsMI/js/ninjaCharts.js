@@ -1398,7 +1398,7 @@ d3.ninja.horizontalLegendRoundedCorners = function module() {
         textOpacity = 0.8,
         widthMultiplier = 0.95;
 
-    var dispatch = d3.dispatch('customClick');
+    var dispatch = d3.dispatch('click');
 
     function exports(_selection) {
         _selection.each(function (_data) {
@@ -1447,7 +1447,7 @@ d3.ninja.horizontalLegendRoundedCorners = function module() {
                 .style('opacity', function (d) {
                     return d.opacity
                 })
-                .on('click', dispatch.customClick)
+                .on('click', dispatch.click)
                 .on('mouseover', function (d) {
                     d3.select(this)
                         .style({
