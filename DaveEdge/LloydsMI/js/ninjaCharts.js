@@ -836,7 +836,7 @@ define([
                     titleSvg.exit().transition().duration(200).remove();
                     // transition
                     titleSvg.transition()
-                        .duration(300)
+                        .duration(transitionDuration)
                         .text(title)
                         .style('text-anchor', 'middle');
 
@@ -851,7 +851,7 @@ define([
                     yTitleSvg.exit().transition().duration(200).remove();
                     // transition
                     yTitleSvg.transition()
-                        .duration(300)
+                        .duration(transitionDuration)
                         .text(yAxis1Title)
                         .attr('x', -chartHeight / 2)
                         .attr('y', -(margin.left * 0.6));
@@ -865,7 +865,7 @@ define([
                     xTitleSvg.exit().transition().duration(200).remove();
                     // transition
                     xTitleSvg.transition()
-                        .duration(300)
+                        .duration(transitionDuration)
                         .text(xAxisTitle)
                         .attr('y', chartHeight + 45)
                         .attr('x', chartWidth / 2);
@@ -1440,7 +1440,7 @@ define([
                 var legendSvg = svg.select('.legend');
 
                 var legendRect = legendSvg.selectAll('rect.legend')
-                    .data(_data);
+                    .data(_data, function(d) { return d.name + d.selected; });
                 // enter
                 legendRect.enter().append('rect')
                     .attr('class', 'legend')
@@ -1452,9 +1452,8 @@ define([
                         d3.select(this)
                             .style({
                                 opacity: hoverOpacity,
-                                stroke: 'black'
+                                stroke: '#525252'
                             });
-                        //                    dispatch.mouseover(d);
                     })
                     .on('mouseout', function (d) {
                         d3.select(this)
@@ -1462,7 +1461,6 @@ define([
                                 opacity: d.opacity, // Re-sets the opacity of the legend item
                                 stroke: 'white'
                             });
-                        //                    dispatch.mouseout([]);
                     })
                 // exit
                 legendRect.exit().transition().duration(200).attr('width', 0).remove();
@@ -1476,7 +1474,13 @@ define([
                         return yPosition(i);
                     })
                     .attr('height', itemHeight * widthMultiplier)
-                    .attr('width', itemWidth * widthMultiplier)
+                    .attr('width', function (d) {
+                        if (d.selected) {
+                            return itemWidth * widthMultiplier;
+                        } else {
+                            return itemWidth * widthMultiplier * 0.95;
+                        }
+                    })
                     .attr('ry', 2)
                     .attr('rx', 2)
                     .style('fill', function (d) {
@@ -1510,6 +1514,19 @@ define([
                     .text(function (d) {
                         return d.name;
                     });
+
+                //                var node = svg.selectAll("g.node")
+                //                    .data(_data) //'some trigger data'
+                //                    .enter().append("g")
+                //                    .attr('height', itemHeight * widthMultiplier)
+                //                    .attr('width', itemWidth * widthMultiplier)
+                //                    .attr("transform", function (d, i) {
+                //                        return "translate(" + xPosition(i) + "," + yPosition(i) + ")";
+                //                    });
+                //                node.append('use')
+                //                    .attr('xlink:href', function (d) {
+                //                        return '#' + 'graphIcon';
+                //                    });
 
             });
         }
