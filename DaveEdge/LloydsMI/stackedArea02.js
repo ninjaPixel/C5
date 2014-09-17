@@ -16,7 +16,7 @@ require.config({
         'dimple': 'js/dimple.v2.1.0.min',
         'ninjaCharts': 'js/ninjaCharts'
     },
-        waitSeconds: 10
+    waitSeconds: 10
 
 });
 
@@ -39,30 +39,70 @@ define([
         'Funds Shareholder users',
  //        'Total'
                      ],
-        colors = ['rgb(237,248,251)', 'rgb(204,236,230)', 'rgb(153,216,201)', 'rgb(102,194,164)', 'rgb(65,174,118)', 'rgb(35,139,69)', 'rgb(0,88,36)'],
-        textColors = ['#525252', '#525252', '#525252', '#525252', '#ededed', '#ededed', '#ededed'],
-        formatedData = [],
-        i = 0;
+        categories = [
+            {
+                name: 'Personal users',
+                selected: true,
+                color: 'rgb(237,248,251)',
+                textColor: '#525252'
+                },
+            {
+                name: 'Corporate users',
+                selected: true,
+                color: 'rgb(204,236,230)',
+                textColor: '#525252'
+                },
+            {
+                name: 'Club users',
+                selected: true,
+                color: 'rgb(153,216,201)',
+                textColor: '#525252'
+                },
+            {
+                name: 'Private Client and Private Banking users',
+                selected: true,
+                color: 'rgb(102,194,164)',
+                textColor: '#525252'
+                },
+            {
+                name: 'Funds Agent users',
+                selected: true,
+                color: 'rgb(65,174,118)',
+                textColor: '#ededed'
+                },
+            {
+                name: 'Funds Shareholder users',
+                selected: true,
+                color: 'rgb(35,139,69)',
+                textColor: '#ededed'
+                }];
 
-    properties.forEach(function (thisProperty) {
-        var valueSet = [];
-        i++;
-        lloydsJSON.forEach(function (d) {
-            valueSet.push({
-                x: d.Date,
-                y: d[thisProperty]
-            });
+    var formatData = function () {
+        var formatedData = [];
+        categories.forEach(function (thisCategory) {
+            if (thisCategory.selected === true) {
+                var valueSet = [];
+                lloydsJSON.forEach(function (d) {
+                    valueSet.push({
+                        x: d.Date,
+                        y: d[thisCategory.name]
+                    });
 
 
+                });
+                formatedData.push({
+                    name: thisCategory.name,
+                    values: valueSet,
+                    color: thisCategory.color
+                });
+            }
         });
-        formatedData.push({
-            name: thisProperty,
-            values: valueSet,
-            color: colors[i]
-        });
-    });
-
-    console.log(formatedData);
+    
+    return formatedData;
+    };
+    
+       
+//    console.log(formatedData);
 
     var margin = {
         top: 30,
@@ -77,24 +117,27 @@ define([
     stackedArea.yMin(0);
     stackedArea.margin(margin);
 
+var data = formatData();
+
     d3.select('#chart')
-        .datum(formatedData)
+        .datum(data)
         .call(stackedArea);
 
     // LEGEND
     var legendData = [],
         selectedOpacity = 0.9,
         unselectedOpacity = 0.5,
-        hoverOpacity = 0.7,
-        len = properties.length;
-    for (var count = 0; count < len; count++) {
+        hoverOpacity = 0.7;
+
+    categories.forEach(function (thisCat) {
         legendData.push({
-            name: properties[count],
-            color: colors[count],
+            name: thisCat.name,
+            color: thisCat.color,
             opacity: selectedOpacity,
-            textColor: textColors[count]
+            textColor: thisCat.textColor
         });
-    }
+    });
+
 
     var legend = d3.ninja.horizontalLegendRoundedCorners();
     //var legend = ninjaCharts.horizontalLegendRoundedCorners();
@@ -109,9 +152,23 @@ define([
     legend.itemWidth(650);
     legend.fontColor('#525252');
     legend.fontSize(20);
-legend.on('click', function(d) {
-    console.log('Legend Click:', d);
-});
+    legend.on('click', function (d) {
+        console.log('Legend Click:', d);
+
+        // update the selectedCategories array to reflect what the user has just clicked
+        var filteredCat = categories.filter(function (dd) {
+            return dd.name === d.name
+        });
+        filteredCat[0].selected = !filteredCat[0].selected;
+        console.log('categories', categories);
+
+        // now we need to redraw the chart, given the new categories selected
+var data = formatData();
+
+    d3.select('#chart')
+        .datum(data)
+        .call(stackedArea);
+    });
 
     d3.select('#legend')
         .datum(legendData)
