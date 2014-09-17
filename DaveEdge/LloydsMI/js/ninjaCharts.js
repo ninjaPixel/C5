@@ -800,15 +800,12 @@ define([
                 areaSvg.exit()
                     .transition()
                     .duration(transitionDuration)
-                    .ease('linear')
+                    .ease(ease)
                     .style('opacity', 0)
                     .remove();
 
                 areaSvg.transition()
-                    .delay(function (d, i) {
-                        return i * 100;
-                    }) // stagger the transition so that it is easier to follow (make sure this has the same setting in the line drawing code)
-                .duration(transitionDuration)
+                    .duration(transitionDuration)
                     .ease(ease)
                     .attr('d', function (d) {
                         return area(d.values);

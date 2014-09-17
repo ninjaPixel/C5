@@ -152,7 +152,7 @@ define([
             .call(stackedArea);
         
         d3.select('#legend')
-            .datum(categories)
+            .datum(categories.slice().reverse())
             .call(legend);
     });
 
@@ -166,7 +166,7 @@ define([
         .datum(data)
         .call(stackedArea);
     d3.select('#legend')
-        .datum(categories)
+        .datum(categories.slice().reverse())
         .call(legend);
 
 
