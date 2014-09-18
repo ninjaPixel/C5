@@ -809,16 +809,7 @@ define([
 
 
 
-                // create line and area functions
-                var singleLine = d3.svg.line()
-                    .x(function (d) {
-                        return xScale(d.x);
-                    })
-                    .y(function (d) {
-                        return yScale(d.y);
-                    });
-                singleLine.interpolate(lineInterpolation);
-
+                // area function
                 var area = d3.svg.area()
                     .x(function (d) {
                         return xScale(d.x);
@@ -843,7 +834,7 @@ define([
                     .append('svg:path')
                     .attr('class', 'area')
                     .style('opacity', 0)
-                    .style('fill', 'none')                
+                    .style('fill', 'none')
                     .style('stroke-width', '1px');
 
                 areaSvg.exit()
@@ -927,6 +918,53 @@ define([
                         .scale(yScale2)
                         .orient('right');
 
+                    var singleLine = d3.svg.line()
+                        .x(function (d) {
+                            return xScale(d.x);
+                        })
+                        .y(function (d) {
+                            return yScale2(d.y);
+                        });
+                    singleLine.interpolate(lineInterpolation);
+                    console.log('line data', lineData);
+
+                    // draw line
+                    lineSvg = svg.select('.chart-group').selectAll('path.line')
+                        .data(lineData, function (d) {
+                            return d.name;
+                        });
+
+                    lineSvg.enter()
+                        .append('svg:path')
+                        .attr('class', 'line')
+                        .style('opacity', 0)
+                        .style('fill', lineFill)
+                        .style('stroke-width', '2.5px');
+
+                    lineSvg.transition()
+                        .delay(function (d, i) {
+                            return i * 100;
+                        }) // stagger the transition so that it is easier to follow
+                    .duration(transitionDuration)
+                        .ease(ease)
+                        .attr('d', function (d) {
+                            return singleLine(d.values);
+                        })
+                        .style('stroke', function (d) {
+                          return 'black';  
+                        //return d.colour;
+                        })
+                        .style('opacity', lineOpacity);
+
+                    console.log('test');
+                    lineSvg.exit()
+                        .transition()
+                        .duration(transitionDuration)
+                        .ease('linear')
+                        .style('opacity', 0)
+                        .remove();
+
+
                     svg.select('.y-axis2-group.axis')
                         .transition()
                         .ease(ease)
@@ -951,7 +989,7 @@ define([
                         .attr('y', (chartWidth + (margin.right * 0.9)));
 
                     if (typeof minY2 !== 'undefined' && typeof maxY2 !== 'undefined') {
-// hmmmm????
+                        // hmmmm????
                     }
                 }
                 plotLabels();
