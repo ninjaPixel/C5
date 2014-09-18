@@ -950,9 +950,8 @@ define([
                         .attr('d', function (d) {
                             return singleLine(d.values);
                         })
-                        .style('stroke', function (d) {
-                          return 'black';  
-                        //return d.colour;
+                        .style('stroke', function (d) {  
+                        return d.color;
                         })
                         .style('opacity', lineOpacity);
 
