@@ -788,7 +788,9 @@ define([
 
                 // shade area
                 areaSvg = svg.select('.chart-group').selectAll('path.area')
-                    .data(stackedData, function(d) { return d.name });
+                    .data(stackedData, function (d) {
+                        return d.name
+                    });
 
                 areaSvg.enter()
                     .append('svg:path')
@@ -1380,7 +1382,7 @@ define([
         return exports;
     };
 
-    d3.ninja.horizontalLegendRoundedCorners = function module() {
+    d3.ninja.horizontalLegendSelectable = function module() {
         var svg,
             width = defaultValues.width,
             itemWidth = defaultValues.legendItemWidth,
@@ -1390,8 +1392,8 @@ define([
             fontSize = defaultValues.legendFontSize,
             fontColor = defaultValues.legendFontColor,
             margin = defaultValues.legendMargin,
-            hoverOpacity = 0.5,
-            textOpacity = 0.8,
+            hoverOpacity = 0.7,
+            textOpacity = 1,
             widthMultiplier = 0.95;
 
         var dispatch = d3.dispatch('click');
@@ -1435,8 +1437,39 @@ define([
                 // draw the legend
                 var legendSvg = svg.select('.legend');
 
+                var legendText = legendSvg.selectAll('text.legend')
+                    .data(_data);
+                // enter
+                legendText.enter().append('text')
+                    .attr('class', 'legend')
+                    .style('font-weight', 'bold')
+                    .style('fill', function (d) {
+                        return d.textColor;
+                    })
+                    .style('font-size', fontSize)
+                    .style('text-anchor', 'middle')
+                    .style('opacity', textOpacity)
+                    .attr('transform', 'translate(0, ' + 6 + ')');
+                // exit
+                legendText.exit().transition().duration(200).remove();
+                // transition
+                legendText.transition()
+                    .duration(300)
+                    .attr('x', function (d, i) {
+                        return xPosition(i) + (itemWidth * widthMultiplier) / 2;
+                    })
+                    .attr('y', function (d, i) {
+                        return yPosition(i) + itemHeight / 2;
+                    })
+                    .text(function (d) {
+                        return d.name;
+                    });
+
+
                 var legendRect = legendSvg.selectAll('rect.legend')
-                    .data(_data, function(d) { return d.name + d.selected; });
+                    .data(_data, function (d) {
+                        return d.name + d.selected;
+                    });
                 // enter
                 legendRect.enter().append('rect')
                     .attr('class', 'legend')
@@ -1483,46 +1516,9 @@ define([
                         return d.color;
                     });
 
-                var legendText = legendSvg.selectAll('text.legend')
-                    .data(_data);
-                // enter
-                legendText.enter().append('text')
-                    .attr('class', 'legend')
-                    .style('font-weight', 'bold')
-                    .style('fill', function (d) {
-                        return d.textColor;
-                    })
-                    .style('font-size', fontSize)
-                    .style('text-anchor', 'middle')
-                    .style('opacity', textOpacity)
-                    .attr('transform', 'translate(0, ' + 6 + ')');
-                // exit
-                legendText.exit().transition().duration(200).remove();
-                // transition
-                legendText.transition()
-                    .duration(300)
-                    .attr('x', function (d, i) {
-                        return xPosition(i) + (itemWidth * widthMultiplier) / 2;
-                    })
-                    .attr('y', function (d, i) {
-                        return yPosition(i) + itemHeight / 2;
-                    })
-                    .text(function (d) {
-                        return d.name;
-                    });
 
-                //                var node = svg.selectAll("g.node")
-                //                    .data(_data) //'some trigger data'
-                //                    .enter().append("g")
-                //                    .attr('height', itemHeight * widthMultiplier)
-                //                    .attr('width', itemWidth * widthMultiplier)
-                //                    .attr("transform", function (d, i) {
-                //                        return "translate(" + xPosition(i) + "," + yPosition(i) + ")";
-                //                    });
-                //                node.append('use')
-                //                    .attr('xlink:href', function (d) {
-                //                        return '#' + 'graphIcon';
-                //                    });
+
+
 
             });
         }
@@ -1595,7 +1591,7 @@ define([
             fontSize = defaultValues.legendFontSize,
             fontColor = defaultValues.legendFontColor,
             margin = defaultValues.legendMargin,
-            backgroundOpacity = defaultValues.legendBackgroundOpacity,
+            backgroundOpacity = 0.5,//defaultValues.legendBackgroundOpacity,
             textOpacity = defaultValues.legendTextOpacity,
             widthMultiplier = 0.95;
 
@@ -1651,7 +1647,7 @@ define([
                 legendRect.exit().transition().duration(200).attr('width', 0).remove();
                 // transition
                 legendRect.transition()
-                    .duration(300)
+                    .duration(transitionDuration)
                     .attr('d', function (d, i) {
                         return ninjaRect(xPosition(i), yPosition(i), (itemWidth * widthMultiplier), (itemHeight * widthMultiplier), 5);
                     })
@@ -1674,7 +1670,7 @@ define([
                 legendText.exit().transition().duration(200).remove();
                 // transition
                 legendText.transition()
-                    .duration(300)
+                    .duration(transitionDuration)
                     .attr('x', function (d, i) {
                         return xPosition(i) + (itemWidth * widthMultiplier) / 2;
                     })

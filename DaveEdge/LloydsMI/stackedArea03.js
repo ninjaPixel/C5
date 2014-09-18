@@ -39,48 +39,49 @@ define([
         'Funds Shareholder users',
  //        'Total'
                      ],
-        selectionOpacity = 0.9,
+        selectionOpacity = 0.5,
+                      colors = ['rgb(255,255,204)','rgb(217,240,163)','rgb(173,221,142)','rgb(120,198,121)','rgb(65,171,93)','rgb(35,132,67)','rgb(0,90,50)'];
         categories = [
             {
                 name: 'Personal users',
-                selected: true,
-                color: 'rgb(237,248,251)',
+                selected: false,
+                color: colors[1],
                 textColor: '#525252',
                 opacity: selectionOpacity
                 },
             {
                 name: 'Corporate users',
                 selected: true,
-                color: 'rgb(204,236,230)',
+                color: colors[2],
                 textColor: '#525252',
                 opacity: selectionOpacity
                 },
             {
                 name: 'Club users',
                 selected: true,
-                color: 'rgb(153,216,201)',
+                color: colors[3],
                 textColor: '#525252',
                 opacity: selectionOpacity
                 },
             {
                 name: 'Private Client and Private Banking users',
                 selected: true,
-                color: 'rgb(102,194,164)',
-                textColor: '#737373',
+                color: colors[4],
+                textColor: '#525252',
                 opacity: selectionOpacity
                 },
             {
                 name: 'Funds Agent users',
                 selected: true,
-                color: 'rgb(65,174,118)',
-                textColor: '#ededed',
+                color: colors[5],
+                textColor: '#525252',
                 opacity: selectionOpacity
                 },
             {
                 name: 'Funds Shareholder users',
                 selected: true,
-                color: 'rgb(35,139,69)',
-                textColor: '#ededed',
+                color: colors[6],
+                textColor: '#525252',
                 opacity: selectionOpacity
                 }];
 
@@ -122,7 +123,7 @@ define([
     stackedArea.yMin(0);
     stackedArea.margin(margin);
     // LEGEND
-    var legend = d3.ninja.horizontalLegendRoundedCorners();
+    var legend = d3.ninja.horizontalLegendSelectable();
     var legendMargin = {
         top: 10,
         bottom: 0,
