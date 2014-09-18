@@ -40,49 +40,55 @@ define([
  //        'Total'
                      ],
         selectionOpacity = 0.5,
-                      colors = ['rgb(255,255,204)','rgb(217,240,163)','rgb(173,221,142)','rgb(120,198,121)','rgb(65,171,93)','rgb(35,132,67)','rgb(0,90,50)'];
-        categories = [
-            {
-                name: 'Personal users',
-                selected: false,
-                color: colors[1],
-                textColor: '#525252',
-                opacity: selectionOpacity
+        colors = ['rgb(255,255,204)', 'rgb(217,240,163)', 'rgb(173,221,142)', 'rgb(120,198,121)', 'rgb(65,171,93)', 'rgb(35,132,67)', 'rgb(0,90,50)'];
+    categories = [
+        {
+            name: 'Personal users',
+            selected: true,
+            color: colors[1],
+            textColor: '#525252',
+            opacity: selectionOpacity,
+            type: 'line' // area or line
                 },
-            {
-                name: 'Corporate users',
-                selected: true,
-                color: colors[2],
-                textColor: '#525252',
-                opacity: selectionOpacity
+        {
+            name: 'Corporate users',
+            selected: true,
+            color: colors[2],
+            textColor: '#525252',
+            opacity: selectionOpacity,
+            type: 'area'
                 },
-            {
-                name: 'Club users',
-                selected: true,
-                color: colors[3],
-                textColor: '#525252',
-                opacity: selectionOpacity
+        {
+            name: 'Club users',
+            selected: true,
+            color: colors[3],
+            textColor: '#525252',
+            opacity: selectionOpacity,
+            type: 'area'
                 },
-            {
-                name: 'Private Client and Private Banking users',
-                selected: true,
-                color: colors[4],
-                textColor: '#525252',
-                opacity: selectionOpacity
+        {
+            name: 'Private Client and Private Banking users',
+            selected: true,
+            color: colors[4],
+            textColor: '#525252',
+            opacity: selectionOpacity,
+            type: 'area'
                 },
-            {
-                name: 'Funds Agent users',
-                selected: true,
-                color: colors[5],
-                textColor: '#525252',
-                opacity: selectionOpacity
+        {
+            name: 'Funds Agent users',
+            selected: true,
+            color: colors[5],
+            textColor: '#525252',
+            opacity: selectionOpacity,
+            type: 'area'
                 },
-            {
-                name: 'Funds Shareholder users',
-                selected: true,
-                color: colors[6],
-                textColor: '#525252',
-                opacity: selectionOpacity
+        {
+            name: 'Funds Shareholder users',
+            selected: true,
+            color: colors[6],
+            textColor: '#525252',
+            opacity: selectionOpacity,
+            type: 'area'
                 }];
 
     var formatData = function () {
@@ -101,7 +107,8 @@ define([
                 formatedData.push({
                     name: thisCategory.name,
                     values: valueSet,
-                    color: thisCategory.color
+                    color: thisCategory.color,
+                    type: thisCategory.type
 
                 });
             }
@@ -114,11 +121,12 @@ define([
         top: 30,
         bottom: 60,
         left: 100,
-        right: 30
+        right: 100
     };
-    var stackedArea = d3.ninja.stackedArea();
+    var stackedArea = d3.ninja.stackedAreaWithSecondaryAxisLines();
     stackedArea.title('Customer Category');
-    stackedArea.yAxis1Title('Count');
+    stackedArea.yAxis1Title('Count (area plot)');
+    stackedArea.yAxis2Title('Count (line plot)');
     stackedArea.xAxisTitle('Date');
     stackedArea.yMin(0);
     stackedArea.margin(margin);
@@ -132,7 +140,7 @@ define([
     };
     legend.margin(legendMargin);
     legend.width(650);
-    legend.itemWidth(650);
+    legend.itemWidth(450);
     legend.fontColor('#525252');
     legend.fontSize(20);
     legend.on('click', function (d) {
@@ -151,14 +159,14 @@ define([
         d3.select('#chart')
             .datum(data)
             .call(stackedArea);
-        
+
         d3.select('#legend')
             .datum(categories.slice().reverse())
             .call(legend);
     });
 
 
-// INITIAL PLOT
+    // INITIAL PLOT
 
 
     var data = formatData();

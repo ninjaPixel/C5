@@ -626,7 +626,7 @@ define([
         return exports;
     };
 
-    d3.ninja.stackedArea = function module() {
+    d3.ninja.stackedAreaWithSecondaryAxisLines = function module() {
         var svg,
             //        propertiesToPlot, // ['column name 1', 'column name 2']
             width = defaultValues.width,
@@ -646,6 +646,10 @@ define([
             lineOpacity = defaultValues.lineOpacity,
             areaOpacity = 0.5, //defaultValues.underLineAreaOpacity,
             areaSvg,
+            type = {
+                area: 'area',
+                line: 'line'
+            },
             lineSvg;
 
         var dispatch = d3.dispatch('customHover');
@@ -658,7 +662,9 @@ define([
 
                 var _dataLen = _data.length,
                     minY,
-                    maxY;
+                    maxY,
+                    minY2,
+                    maxY2;
 
                 var dateExtent = d3.extent(_data[0].values, function (d) {
                     return d.x;
@@ -673,17 +679,16 @@ define([
                         return d.values;
                     });
 
-                var stackedData = stack(_data);
-                console.log(stackedData);
+                var stackedData = stack(_data.filter(function (d) {
+                    return d.type === type.area;
+                }));
 
                 stackedData.forEach(function (thisData) {
-                    console.log('iteration');
                     var thisExtent = d3.extent(thisData.values, function (d) {
                         return d.y + d.y0;
                     })
                     if (typeof minY === 'undefined') {
                         minY = thisExtent[0];
-                        console.log('minY initialised to:', minY);
                     } else {
                         if (thisExtent[0] < minY) {
                             minY = thisExtent[1];
@@ -692,16 +697,44 @@ define([
 
                     if (typeof maxY === 'undefined') {
                         maxY = thisExtent[1];
-                        console.log('maxY initialised to:', maxY);
                     } else {
                         if (thisExtent[1] > maxY) {
                             maxY = thisExtent[1];
-                            console.log('maxY updated to:', maxY);
                         }
                     }
                 });
 
                 console.log('min/max y', minY, maxY);
+
+                // get min max y values of the secondary (i.e. line) axis, if it exist
+                // if we are able to calculate the min/max y2 values then it means that they exist
+                // i.e. user also wants a line plotted on the chart
+                // and later code, in this module, will then create variable relating to the secondary plot.
+                var lineData = _data.filter(function (d) {
+                    return d.type === type.line;
+                });
+                lineData.forEach(function (thisData) {
+                    var thisExtent = d3.extent(thisData.values, function (d) {
+                        return d.y;
+                    })
+                    if (typeof minY2 === 'undefined') {
+                        minY2 = thisExtent[0];
+                    } else {
+                        if (thisExtent[0] < minY2) {
+                            minY2 = thisExtent[1];
+                        }
+                    }
+
+                    if (typeof maxY2 === 'undefined') {
+                        maxY2 = thisExtent[1];
+                    } else {
+                        if (thisExtent[1] > maxY2) {
+                            maxY2 = thisExtent[1];
+                        }
+                    }
+                });
+                console.log('min/max y2', minY2, maxY2);
+
                 // if the user has specified min/max y values, then apply them now
                 if (typeof yMinUserDefined !== 'undefined') {
                     minY = yMinUserDefined;
@@ -719,6 +752,9 @@ define([
                     .domain([minY, maxY])
                     .range([chartHeight, 0]);
 
+
+
+
                 // axis of evil
                 var xAxis = d3.svg.axis()
                     .scale(xScale)
@@ -727,6 +763,8 @@ define([
                 var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient('left');
+
+
 
 
                 // Trick to just append the svg skeleton once
@@ -738,18 +776,23 @@ define([
                     container.append('g').classed('chart-group', true);
                     container.append('g').classed('x-axis-group axis', true);
                     container.append('g').classed('y-axis-group axis', true);
+                    container.append('g').classed('y-axis2-group axis', true);
                     container.append("g").classed("chartTitle", true);
                     container.append("g").classed("yTitle", true);
+                    container.append("g").classed("y2Title", true);
                     container.append("g").classed("xTitle", true);
                 }
+
                 svg.transition().attr({
                     width: width,
                     height: height
                 });
+
                 svg.select('.container-group')
                     .attr({
                         transform: 'translate(' + margin.left + ',' + margin.top + ')'
                     });
+
                 svg.select('.x-axis-group.axis')
                     .transition()
                     .ease(ease)
@@ -757,11 +800,15 @@ define([
                         transform: 'translate(0,' + yScale(0) + ')'
                     })
                     .call(xAxis);
+
                 svg.select('.y-axis-group.axis')
                     .transition()
                     .ease(ease)
                     .call(yAxis);
-                console.log('test');
+
+
+
+
                 // create line and area functions
                 var singleLine = d3.svg.line()
                     .x(function (d) {
@@ -786,7 +833,7 @@ define([
                 area.interpolate(lineInterpolation);
 
 
-                // shade area
+                // stacked area
                 areaSvg = svg.select('.chart-group').selectAll('path.area')
                     .data(stackedData, function (d) {
                         return d.name
@@ -796,12 +843,12 @@ define([
                     .append('svg:path')
                     .attr('class', 'area')
                     .style('opacity', 0)
-                    .style('fill', 'none')
+                    .style('fill', 'none')                
                     .style('stroke-width', '1px');
 
                 areaSvg.exit()
                     .transition()
-                    .duration(transitionDuration)
+                    .duration(0)
                     .ease(ease)
                     .style('opacity', 0)
                     .remove();
@@ -843,8 +890,7 @@ define([
                     yTitleSvg.enter().append("text")
                         .attr("class", "yTitle")
                         .attr('transform', 'rotate(-90)')
-
-                    .style('text-anchor', 'middle');
+                        .style('text-anchor', 'middle');
                     // exit
                     yTitleSvg.exit().transition().duration(200).remove();
                     // transition
@@ -853,6 +899,8 @@ define([
                         .text(yAxis1Title)
                         .attr('x', -chartHeight / 2)
                         .attr('y', -(margin.left * 0.6));
+
+
 
                     // x title
                     var xTitleSvg = svg.select(".xTitle").selectAll("text.xTitle").data(arr);
@@ -869,7 +917,45 @@ define([
                         .attr('x', chartWidth / 2);
 
                 }
+
+                function plotSecondaryAxisAndLines() {
+                    var yScale2 = d3.scale.linear()
+                        .domain([minY2, maxY2])
+                        .range([chartHeight, 0]);
+
+                    var yAxis2 = d3.svg.axis()
+                        .scale(yScale2)
+                        .orient('right');
+
+                    svg.select('.y-axis2-group.axis')
+                        .transition()
+                        .ease(ease)
+                        .attr({
+                            transform: 'translate(' + xScale(maxDate) + ', 0)'
+                        })
+                        .call(yAxis2);
+
+                    // y2 title
+                    var y2TitleSvg = svg.select(".y2Title").selectAll("text.y2Title").data([0]);
+                    y2TitleSvg.enter().append("text")
+                        .attr("class", "y2Title")
+                        .attr('transform', 'rotate(-90)')
+                        .style('text-anchor', 'middle');
+                    // exit
+                    y2TitleSvg.exit().transition().duration(200).remove();
+                    // transition
+                    y2TitleSvg.transition()
+                        .duration(transitionDuration)
+                        .text(yAxis2Title)
+                        .attr('x', -chartHeight / 2)
+                        .attr('y', (chartWidth + (margin.right * 0.9)));
+
+                    if (typeof minY2 !== 'undefined' && typeof maxY2 !== 'undefined') {
+// hmmmm????
+                    }
+                }
                 plotLabels();
+                plotSecondaryAxisAndLines();
             });
         }
 
@@ -1591,7 +1677,7 @@ define([
             fontSize = defaultValues.legendFontSize,
             fontColor = defaultValues.legendFontColor,
             margin = defaultValues.legendMargin,
-            backgroundOpacity = 0.5,//defaultValues.legendBackgroundOpacity,
+            backgroundOpacity = 0.5, //defaultValues.legendBackgroundOpacity,
             textOpacity = defaultValues.legendTextOpacity,
             widthMultiplier = 0.95;
 
