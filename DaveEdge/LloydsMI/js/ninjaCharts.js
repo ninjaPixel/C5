@@ -773,7 +773,8 @@ define([
                         .append('svg')
                         .classed('chart', true);
                     var container = svg.append('g').classed('container-group', true);
-                    container.append('g').classed('chart-group', true);
+                    container.append('g').classed('area-group', true);
+                    container.append('g').classed('line-group', true);
                     container.append('g').classed('x-axis-group axis', true);
                     container.append('g').classed('y-axis-group axis', true);
                     container.append('g').classed('y-axis2-group axis', true);
@@ -825,7 +826,7 @@ define([
 
 
                 // stacked area
-                areaSvg = svg.select('.chart-group').selectAll('path.area')
+                areaSvg = svg.select('.area-group').selectAll('path.area')
                     .data(stackedData, function (d) {
                         return d.name
                     });
@@ -929,7 +930,7 @@ define([
                     console.log('line data', lineData);
 
                     // draw line
-                    lineSvg = svg.select('.chart-group').selectAll('path.line')
+                    lineSvg = svg.select('.line-group').selectAll('path.line')
                         .data(lineData, function (d) {
                             return d.name;
                         });
