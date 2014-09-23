@@ -773,7 +773,11 @@ define([
                 tip.offset(function (d) {
                     // d3-tip plots the tip at the tip edge of the bounding area, halfway along
                     // here we dynamicaly offset this so that it lines up with the acutal data point
-                    return [0, -chartWidth/2 + xScale(d.x)];
+                    
+                    var yOffset = yScale(d.localMaxY);
+                    console.log('vert offset',yOffset);
+
+                    return [yOffset, -chartWidth/2 + xScale(d.x)];
                 })
                     .html(function (d) {
                         return "<strong>X:</strong> <span style='color:red'>" + d.x + "</span>";
@@ -871,6 +875,16 @@ define([
                         var closest = selected.reduce(function (prev, curr) {
                             return (Math.abs(curr.x - goal) < Math.abs(prev.x - goal) ? curr : prev);
                         });
+                    // need to get the max y value in this data series as we need
+                    // to offest the tooltip by it, so that it plots where we want to
+                    var localMaxY = d3.max(selected, function(d){return d.y + d.y0});
+                    var localMinY = d3.min(selected, function(d){return d.y + d.y0});
+                    var localMinY0 = d3.min(selected, function(d){return d.y0});
+                    console.log('selected',selected);
+                    console.log('local max y', localMaxY);
+                    closest.localMaxY = localMaxY;
+                    closest.localMinY = localMinY;
+                    closest.localMinY0 = localMinY0;
                         console.log('closest', closest);
                         tip.show(closest);
                     })
