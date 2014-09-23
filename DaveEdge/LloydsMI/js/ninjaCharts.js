@@ -770,6 +770,11 @@ define([
 
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
+                tip.offset(function (d) {
+                    // d3-tip plots the tip at the tip edge of the bounding area, halfway along
+                    // here we dynamicaly offset this so that it lines up with the acutal data point
+                    return [0, -chartWidth/2 + xScale(d.x)];
+                })
                     .html(function (d) {
                         return "<strong>X:</strong> <span style='color:red'>" + d.x + "</span>";
                         console.log('tooltip obj', d);
