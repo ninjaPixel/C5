@@ -17,15 +17,17 @@ require.config({
         'moment': '../../js/moment.v2.8.1.min',
         'moment-timezone': '../../js/moment-timezone.v0.2.1.min',
         'moment-timezone-data': '../../js/moment-timezone-with-data-2010-2020',
-        'd3': 'd3.v3.4.11.min'
+        'd3': 'js/d3.v3.4.11.min',
+        'd3-tip': 'js/d3-tip'
     }
 });
 
 define([
     // Load our app module and pass it to our definition function
-    'd3'
+    'd3', 'd3-tip'
 ], function (d3) {
     console.log('ninjaCharts loaded. Using d3 version', d3.version);
+    console.log(d3.tip());
 
     // setup our charts in the d3.ninja namespace
     d3.ninja = {};
@@ -643,8 +645,9 @@ define([
             xAxisTitle = '',
             yMaxUserDefined,
             yMinUserDefined,
-            lineOpacity = defaultValues.lineOpacity,
+            lineOpacity = 0.8, //defaultValues.lineOpacity,
             areaOpacity = 0.5, //defaultValues.underLineAreaOpacity,
+            mouseOverAreaOpacity = 0.65,
             areaSvg,
             type = {
                 area: 'area',
@@ -765,6 +768,12 @@ define([
                     .orient('left');
 
 
+                var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .html(function (d) {
+                        return "<strong>X:</strong> <span style='color:red'>" + d.x + "</span>";
+                        console.log('tooltip obj',d);
+                    });
 
 
                 // Trick to just append the svg skeleton once
@@ -772,7 +781,7 @@ define([
                     svg = d3.select(this)
                         .append('svg')
                         .classed('chart', true);
-                    var container = svg.append('g').classed('container-group', true);
+                    var container = svg.append('g').classed('container-group', true).call(tip);
                     container.append('g').classed('area-group', true);
                     container.append('g').classed('line-group', true);
                     container.append('g').classed('x-axis-group axis', true);
@@ -823,7 +832,7 @@ define([
                     });
 
                 area.interpolate(lineInterpolation);
-
+                var datearray = [];
 
                 // stacked area
                 areaSvg = svg.select('.area-group').selectAll('path.area')
@@ -836,6 +845,33 @@ define([
                     .attr('class', 'area')
                     .style('opacity', 0)
                     .style('fill', 'none')
+                    .on('mouseover', function (d) {
+                        d3.select(this)
+                            .style({
+                                opacity: mouseOverAreaOpacity
+                            });                        
+                    })
+                    .on('mouseout', function (d) {
+                        d3.select(this)
+                            .style({
+                                opacity: areaOpacity // Re-sets the opacity of the legend item
+                            });
+                    })
+                    .on("mousemove", function (d, i) {
+                        mousex = d3.mouse(this);
+                        mousex = mousex[0];
+                        var invertedx = xScale.invert(mousex);
+                        console.log('invertedx', invertedx);
+                        var goal = invertedx;
+                        var selected = (d.values);
+                        var closest = selected.reduce(function (prev, curr) {
+                            return (Math.abs(curr.x - goal) < Math.abs(prev.x - goal) ? curr : prev);
+                        });
+                        console.log('closest', closest);
+                    tip.show(d);
+//                        tooltip.html("<p>" + d.name + "<br>" + pro + "</p>").style("visibility", "visible");
+
+                    })
                     .style('stroke-width', '1px');
 
                 areaSvg.exit()
@@ -858,6 +894,8 @@ define([
                         return d.color;
                     })
                     .style('opacity', areaOpacity);
+
+                console.log('stacked', stackedData);
 
 
                 function plotLabels() {
@@ -940,6 +978,7 @@ define([
                         .attr('class', 'line')
                         .style('opacity', 0)
                         .style('fill', lineFill)
+                        .style("stroke-dasharray", ("3, 3"))
                         .style('stroke-width', '2.5px');
 
                     lineSvg.transition()
@@ -951,8 +990,8 @@ define([
                         .attr('d', function (d) {
                             return singleLine(d.values);
                         })
-                        .style('stroke', function (d) {  
-                        return d.color;
+                        .style('stroke', function (d) {
+                            return d.color;
                         })
                         .style('opacity', lineOpacity);
 

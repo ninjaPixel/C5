@@ -52,7 +52,7 @@ define([
             type: 'line' // area or line
                 },
         {
-            name: 'Personal users',
+            name: 'Personal users (do not click ATM)',
             selected: false,
             color: colors[1],
             textColor: '#525252',
@@ -118,6 +118,7 @@ define([
                     values: valueSet,
                     color: thisCategory.color,
                     type: thisCategory.type
+                    
 
                 });
             }
@@ -134,7 +135,7 @@ define([
     };
     var stackedArea = d3.ninja.stackedAreaWithSecondaryAxisLines();
     stackedArea.title('Customer Category');
-    stackedArea.yAxis1Title('Count (area plot)');
+    stackedArea.yAxis1Title('Cumulative Count (area plot)');
     stackedArea.yAxis2Title('Count (line plot)');
     stackedArea.xAxisTitle('Date');
     stackedArea.yMin(0);

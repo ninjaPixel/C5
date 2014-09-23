@@ -9,9 +9,10 @@
     <link rel="stylesheet" type="text/css" href="bootstrap/css/docs.min.css">
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
     <!--    <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.1/jquery-ui.theme.min.css">-->
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
+
     <style>
         #format {
             margin-top: 2em;
@@ -37,6 +38,32 @@
             font: 16px sans-serif;
             color: '#ededed';
         }
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+        /* Creates a small triangle extender for the tooltip */
+        .d3-tip:after {
+            box-sizing: border-box;
+            display: inline;
+            font-size: 10px;
+            width: 100%;
+            line-height: 1;
+            color: rgba(0, 0, 0, 0.8);
+            content: "\25BC";
+            position: absolute;
+            text-align: center;
+        }
+        /* Style northward tooltips differently */
+        .d3-tip.n:after {
+            margin: -1px 0 0 0;
+            top: 100%;
+            left: 0;
+        }
     </style>
 </head>
 
@@ -49,7 +76,7 @@
                 <h2>Lloyds Online Banking</h2>
                 <div id="chart"></div>
                 <div id="legend"></div>
-                
+
 
             </div>
 
@@ -70,6 +97,13 @@
 
 
 <script data-main="stackedArea03" src="js/require.js"></script>
+<!--
+        <script src="js/d3-tip.js"></script>
+<script>var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .html(function(d) { return d; });
+    </script>
+-->
 
 </html>
 
