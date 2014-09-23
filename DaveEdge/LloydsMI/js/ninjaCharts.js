@@ -772,7 +772,7 @@ define([
                     .attr('class', 'd3-tip')
                     .html(function (d) {
                         return "<strong>X:</strong> <span style='color:red'>" + d.x + "</span>";
-                        console.log('tooltip obj',d);
+                        console.log('tooltip obj', d);
                     });
 
 
@@ -849,7 +849,7 @@ define([
                         d3.select(this)
                             .style({
                                 opacity: mouseOverAreaOpacity
-                            });                        
+                            });
                     })
                     .on('mouseout', function (d) {
                         d3.select(this)
@@ -857,10 +857,9 @@ define([
                                 opacity: areaOpacity // Re-sets the opacity of the legend item
                             });
                     })
-                    .on("mousemove", function (d, i) {
-                        mousex = d3.mouse(this);
-                        mousex = mousex[0];
-                        var invertedx = xScale.invert(mousex);
+                    .on('mousemove', function (d) {
+                        var mousex = d3.mouse(this)[0],
+                            invertedx = xScale.invert(mousex);
                         console.log('invertedx', invertedx);
                         var goal = invertedx;
                         var selected = (d.values);
@@ -868,9 +867,7 @@ define([
                             return (Math.abs(curr.x - goal) < Math.abs(prev.x - goal) ? curr : prev);
                         });
                         console.log('closest', closest);
-                    tip.show(d);
-//                        tooltip.html("<p>" + d.name + "<br>" + pro + "</p>").style("visibility", "visible");
-
+                        tip.show(closest);
                     })
                     .style('stroke-width', '1px');
 
