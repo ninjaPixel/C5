@@ -753,7 +753,9 @@ define([
                     .domain([minY, maxY])
                     .range([chartHeight, 0]);
 
-
+                    var yScale2 = d3.scale.linear()
+                        .domain([minY2, maxY2])
+                        .range([chartHeight, 0]);
 
 
                 // axis of evil
@@ -830,63 +832,6 @@ define([
                     });
 
                 area.interpolate(lineInterpolation);
-                var datearray = [];
-
-                tooltipBubbles = [];
-                stackedData.forEach(function (thisData) {
-                    thisData.values.forEach(function (theseValues) {
-                        tooltipBubbles.push({
-                            x: theseValues.x,
-                            yTotal: (theseValues.y + theseValues.y0),
-                            y: theseValues.y,
-                            name: thisData.name
-                        });
-                    });
-                });
-
-                svg.select('.area-tooltip').call(tip); // need to call tip here as otherewise the tooltip won't draw on items which have been romoved and then re-added
-                tooltipBubblesSvg = svg.select('.area-tooltip').selectAll('.bubble')
-                    .data(tooltipBubbles, function (d) {
-                        return d.yTotal + d.x + d.name
-                    });
-
-                tooltipBubblesSvg.enter().append('circle')
-                    .classed('bubble', true)
-                    .attr({
-                        r: 4
-                    })
-                    .style({
-                        opacity: 0,
-                        stroke: 'white',
-                        fill: '#525252'
-                    })
-                    .on('mouseover', function (d) {
-                        d3.select(this)
-                            .style({
-                                opacity: 1
-                            });
-                        console.log(d.x, d.y, d.name);
-                        tip.show(d);
-                    })
-                    .on('mouseout', function () {
-                        d3.select(this)
-                            .style({
-                                opacity: 0
-                            });
-                        tip.hide();
-                    });
-
-                tooltipBubblesSvg.transition()
-                    .attr({
-                        cx: function (d) {
-                            return xScale(d.x);
-                        },
-                        cy: function (d) {
-                            return yScale(d.yTotal);
-                        }
-                    });
-
-                tooltipBubblesSvg.exit().transition().remove();
 
 
                 // stacked area
@@ -970,11 +915,9 @@ define([
                         .attr('x', chartWidth / 2);
 
                 }
-
+                
                 function plotSecondaryAxisAndLines() {
-                    var yScale2 = d3.scale.linear()
-                        .domain([minY2, maxY2])
-                        .range([chartHeight, 0]);
+
 
                     var yAxis2 = d3.svg.axis()
                         .scale(yScale2)
@@ -1052,8 +995,84 @@ define([
                         // hmmmm????
                     }
                 }
+
+                function plotToolTips() {
+                    // tooltips
+                    // create the object array for all data points on the chart - both 
+                    // from the stack area and the individual lines
+                    tooltipBubbles = [];
+                    stackedData.forEach(function (thisData) {
+                        thisData.values.forEach(function (theseValues) {
+                            tooltipBubbles.push({
+                                x: theseValues.x,
+                                yTotal: (theseValues.y + theseValues.y0),
+                                y: theseValues.y,
+                                yScaleFunction: yScale,
+                                name: thisData.name
+                            });
+                        });
+                    });
+                    console.log(lineData);
+                    lineData.forEach(function (thisLine) {
+                        thisLine.values.forEach(function (thisPoint) {
+                            tooltipBubbles.push({
+                                x: thisPoint.x,
+                                yTotal: thisPoint.y,
+                                y: thisPoint.y,
+                                yScaleFunction: yScale2,
+                                name: thisLine.name
+                            });
+                        });
+                    });
+
+                    svg.select('.area-tooltip').call(tip); // need to call tip here as otherewise the tooltip won't draw on items which have been romoved and then re-added
+                    tooltipBubblesSvg = svg.select('.area-tooltip').selectAll('.bubble')
+                        .data(tooltipBubbles, function (d) {
+                            return d.yTotal + d.x + d.name
+                        });
+
+                    tooltipBubblesSvg.enter().append('circle')
+                        .classed('bubble', true)
+                        .attr({
+                            r: 4
+                        })
+                        .style({
+                            opacity: 0,
+                            stroke: 'white',
+                            fill: '#525252'
+                        })
+                        .on('mouseover', function (d) {
+                            d3.select(this)
+                                .style({
+                                    opacity: 1
+                                });
+                            console.log(d.x, d.y, d.name);
+                            tip.show(d);
+                        })
+                        .on('mouseout', function () {
+                            d3.select(this)
+                                .style({
+                                    opacity: 0
+                                });
+                            tip.hide();
+                        });
+
+                    tooltipBubblesSvg.transition()
+                        .attr({
+                            cx: function (d) {
+                                return xScale(d.x);
+                            },
+                            cy: function (d) {
+                                return d.yScaleFunction(d.yTotal);
+                            }
+                        });
+
+                    tooltipBubblesSvg.exit().transition().remove();
+                }
+
                 plotLabels();
                 plotSecondaryAxisAndLines();
+                plotToolTips();
             });
         }
 
