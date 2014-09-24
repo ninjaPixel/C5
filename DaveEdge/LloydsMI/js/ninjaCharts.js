@@ -771,7 +771,7 @@ define([
                     .offset([-10, 0])
                     .html(function (d) {
                         var thisMoment = moment(d.x),
-                        thisDate  = thisMoment.format("Do MMM 'YY");
+                            thisDate = thisMoment.format("Do MMM 'YY");
                         return thisDate + '<br/>' + d.name + ': ' + d.y;
                     });
 
@@ -781,7 +781,7 @@ define([
                     svg = d3.select(this)
                         .append('svg')
                         .classed('chart', true);
-                    var container = svg.append('g').classed('container-group', true).call(tip);
+                    var container = svg.append('g').classed('container-group', true);
                     container.append('g').classed('area-group', true);
                     container.append('g').classed('line-group', true);
                     container.append('g').classed('x-axis-group axis', true);
@@ -844,7 +844,11 @@ define([
                     });
                 });
 
-                tooltipBubblesSvg = svg.select('.area-tooltip').selectAll('.bubble').data(tooltipBubbles);
+                svg.select('.area-tooltip').call(tip); // need to call tip here as otherewise the tooltip won't draw on items which have been romoved and then re-added
+                tooltipBubblesSvg = svg.select('.area-tooltip').selectAll('.bubble')
+                    .data(tooltipBubbles, function (d) {
+                        return d.yTotal + d.x + d.name
+                    });
 
                 tooltipBubblesSvg.enter().append('circle')
                     .classed('bubble', true)
@@ -861,6 +865,7 @@ define([
                             .style({
                                 opacity: 1
                             });
+                        console.log(d.x, d.y, d.name);
                         tip.show(d);
                     })
                     .on('mouseout', function () {
@@ -872,14 +877,6 @@ define([
                     });
 
                 tooltipBubblesSvg.transition()
-                    .duration(0)
-                    .ease(ease)
-                    .style({
-                        fill: function (d) {
-                            return d.color;
-                        },
-                        opacity: 0
-                    })
                     .attr({
                         cx: function (d) {
                             return xScale(d.x);
