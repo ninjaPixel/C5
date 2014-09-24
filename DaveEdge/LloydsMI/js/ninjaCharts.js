@@ -14,9 +14,9 @@ require.config({
         }
     },
     paths: {
-        'moment': '../../js/moment.v2.8.1.min',
-        'moment-timezone': '../../js/moment-timezone.v0.2.1.min',
-        'moment-timezone-data': '../../js/moment-timezone-with-data-2010-2020',
+        'moment': 'js/moment.v2.8.1.min',
+        'moment-timezone': 'js/moment-timezone.v0.2.1.min',
+        'moment-timezone-data': 'js/moment-timezone-with-data-2010-2020',
         'd3': 'js/d3.v3.4.11.min',
         'd3-tip': 'js/d3-tip'
     }
@@ -24,10 +24,9 @@ require.config({
 
 define([
     // Load our app module and pass it to our definition function
-    'd3', 'd3-tip'
-], function (d3) {
+    'd3', 'moment', 'd3-tip'
+], function (d3, moment) {
     console.log('ninjaCharts loaded. Using d3 version', d3.version);
-    console.log(d3.tip());
 
     // setup our charts in the d3.ninja namespace
     d3.ninja = {};
@@ -676,7 +675,6 @@ define([
                 })
                 var minDate = dateExtent[0],
                     maxDate = dateExtent[1];
-                console.log('min/max x', minDate, maxDate);
 
                 // need to get max and min of the stack (i.e. sum of all items, not just the individual items)
                 var stack = d3.layout.stack()
@@ -709,8 +707,6 @@ define([
                     }
                 });
 
-                console.log('min/max y', minY, maxY);
-
                 // get min max y values of the secondary (i.e. line) axis, if it exist
                 // if we are able to calculate the min/max y2 values then it means that they exist
                 // i.e. user also wants a line plotted on the chart
@@ -738,7 +734,7 @@ define([
                         }
                     }
                 });
-                console.log('min/max y2', minY2, maxY2);
+
 
                 // if the user has specified min/max y values, then apply them now
                 if (typeof yMinUserDefined !== 'undefined') {
@@ -747,7 +743,7 @@ define([
                 if (typeof yMaxUserDefined !== 'undefined') {
                     maxY = yMaxUserDefined;
                 }
-                console.log('min/max y', minY, maxY);
+
                 // create the sclaing functions
                 var xScale = d3.time.scale()
                     .range([0, chartWidth]);
@@ -772,21 +768,11 @@ define([
 
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
-//                tip.offset(function (d) {
-//                    // d3-tip plots the tip at the tip edge of the bounding area, halfway along
-//                    // here we dynamicaly offset this so that it lines up with the acutal data point
-//                    var areaHeight = d.localMaxY - d.localMinY0;
-//                    console.log('areaHeight', areaHeight);
-//                    console.log('areaHeight scaled', yScale(areaHeight));
-//                    var yOffset = yScale(areaHeight);
-//                    console.log('vert offset', yOffset);
-//
-//                    return [yOffset - 20, -chartWidth / 2 + xScale(d.x)];
-//                })
-                .offset([-10,0])
+                    .offset([-10, 0])
                     .html(function (d) {
-                        return 'x:' + d.x + '<br/>y: ' + d.y;
-//                        console.log('tooltip obj', d);
+                        var thisMoment = moment(d.x),
+                        thisDate  = thisMoment.format("Do MMM 'YY");
+                        return thisDate + '<br/>' + d.name + ': ' + d.y;
                     });
 
 
@@ -831,9 +817,6 @@ define([
                     .ease(ease)
                     .call(yAxis);
 
-
-
-
                 // area function
                 var area = d3.svg.area()
                     .x(function (d) {
@@ -849,17 +832,17 @@ define([
                 area.interpolate(lineInterpolation);
                 var datearray = [];
 
-
                 tooltipBubbles = [];
                 stackedData.forEach(function (thisData) {
                     thisData.values.forEach(function (theseValues) {
                         tooltipBubbles.push({
                             x: theseValues.x,
-                            y: (theseValues.y + theseValues.y0)
+                            yTotal: (theseValues.y + theseValues.y0),
+                            y: theseValues.y,
+                            name: thisData.name
                         });
                     });
                 });
-                console.log('tooltip bubbles', tooltipBubbles);
 
                 tooltipBubblesSvg = svg.select('.area-tooltip').selectAll('.bubble').data(tooltipBubbles);
 
@@ -868,24 +851,24 @@ define([
                     .attr({
                         r: 4
                     })
-                .style({
-                                opacity: 0,
-                                stroke: 'white',
-                            fill:'#525252'
-                            })
+                    .style({
+                        opacity: 0,
+                        stroke: 'white',
+                        fill: '#525252'
+                    })
                     .on('mouseover', function (d) {
                         d3.select(this)
                             .style({
                                 opacity: 1
                             });
-                    tip.show(d);
+                        tip.show(d);
                     })
                     .on('mouseout', function () {
                         d3.select(this)
                             .style({
                                 opacity: 0
                             });
-                    tip.hide();
+                        tip.hide();
                     });
 
                 tooltipBubblesSvg.transition()
@@ -902,7 +885,7 @@ define([
                             return xScale(d.x);
                         },
                         cy: function (d) {
-                            return yScale(d.y);
+                            return yScale(d.yTotal);
                         }
                     });
 
@@ -920,58 +903,6 @@ define([
                     .attr('class', 'area')
                     .style('opacity', 0)
                     .style('fill', 'none')
-                    .on('mouseover', function (d) {
-                        d3.select(this)
-                            .style({
-                                opacity: mouseOverAreaOpacity
-                            });
-                    })
-                    .on('mouseout', function (d) {
-                        d3.select(this)
-                            .style({
-                                opacity: areaOpacity // Re-sets the opacity of the legend item
-                            });
-                    })
-                    .on('mousemove', function (d) {
-                        var mousex = d3.mouse(this)[0],
-                            invertedx = xScale.invert(mousex);
-                        console.log('invertedx', invertedx);
-                        var goal = invertedx;
-                        var selected = (d.values);
-                        var closest = selected.reduce(function (prev, curr) {
-                            return (Math.abs(curr.x - goal) < Math.abs(prev.x - goal) ? curr : prev);
-                        });
-                        // need to get the max y value in this data series as we need
-                        // to offest the tooltip by it, so that it plots where we want to
-                        var localMaxY = d3.max(d.values, function (d) {
-                            return d.y + d.y0
-                        });
-                        var localMinY = d3.min(d.values, function (d) {
-                            return d.y + d.y0
-                        });
-                        var localMinY0 = d3.min(d.values, function (d) {
-                            return d.y0
-                        });
-                        //console.log('selected',selected);
-                        console.log('local max y', localMaxY);
-                        closest.localMaxY = localMaxY;
-                        closest.localMinY = localMinY;
-                        closest.localMinY0 = localMinY0;
-                        console.log('local min y0', localMinY0);
-                        console.log('closest', closest);
-                        //                        tip.show(closest);
-
-                        //
-                        //                        toolTip.transition()
-                        //                            .duration(200)
-                        //                            .style("opacity", .9);
-                        //
-                        //                        toolTip.html(d.name)
-                        //                            .style("left", (0) + "px")
-                        //                            .style("top", (0) + "px");
-                        //
-                        //                        console.log('tooltip', toolTip);
-                    })
                     .style('stroke-width', '1px');
 
                 areaSvg.exit()
@@ -994,9 +925,6 @@ define([
                         return d.color;
                     })
                     .style('opacity', areaOpacity);
-
-                console.log('stacked', stackedData);
-
 
                 function plotLabels() {
                     // title
@@ -1029,8 +957,6 @@ define([
                         .text(yAxis1Title)
                         .attr('x', -chartHeight / 2)
                         .attr('y', -(margin.left * 0.6));
-
-
 
                     // x title
                     var xTitleSvg = svg.select(".xTitle").selectAll("text.xTitle").data(arr);
@@ -1065,7 +991,6 @@ define([
                             return yScale2(d.y);
                         });
                     singleLine.interpolate(lineInterpolation);
-                    console.log('line data', lineData);
 
                     // draw line
                     lineSvg = svg.select('.line-group').selectAll('path.line')
@@ -1095,7 +1020,6 @@ define([
                         })
                         .style('opacity', lineOpacity);
 
-                    console.log('test');
                     lineSvg.exit()
                         .transition()
                         .duration(transitionDuration)
