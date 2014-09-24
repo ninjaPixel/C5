@@ -45,9 +45,8 @@
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
             border-radius: 2px;
-            
         }
-        /* Creates a small triangle extender for the tooltip */
+        /* Creates a small triangle extender for the tip */
         .d3-tip:after {
             box-sizing: border-box;
             display: inline;
@@ -58,14 +57,27 @@
             content: "\25BC";
             position: absolute;
             text-align: center;
-            
         }
         /* Style northward tooltips differently */
         .d3-tip.n:after {
             margin: -1px 0 0 0;
             top: 100%;
             left: 0;
-            
+        }
+        div.area-tooltip {
+            position: absolute;
+/*            position:relative;*/
+            text-align: center;
+            width: 80px;
+            height: 30px;
+            padding: 2px;
+            font: 12px sans-serif;
+            color: whitesmoke;
+            background: gray;
+            border: 2;
+            border-radius: 1px;
+            pointer-events: none;
+            z-index: 999;
         }
     </style>
 </head>

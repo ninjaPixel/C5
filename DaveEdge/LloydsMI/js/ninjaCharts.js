@@ -649,6 +649,8 @@ define([
             areaOpacity = 0.5, //defaultValues.underLineAreaOpacity,
             mouseOverAreaOpacity = 0.65,
             areaSvg,
+            tooltipBubbles,
+            tooltipBubblesSvg,
             type = {
                 area: 'area',
                 line: 'line'
@@ -770,18 +772,21 @@ define([
 
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
-                tip.offset(function (d) {
-                    // d3-tip plots the tip at the tip edge of the bounding area, halfway along
-                    // here we dynamicaly offset this so that it lines up with the acutal data point
-                    
-                    var yOffset = yScale(d.localMaxY);
-                    console.log('vert offset',yOffset);
-
-                    return [yOffset, -chartWidth/2 + xScale(d.x)];
-                })
+//                tip.offset(function (d) {
+//                    // d3-tip plots the tip at the tip edge of the bounding area, halfway along
+//                    // here we dynamicaly offset this so that it lines up with the acutal data point
+//                    var areaHeight = d.localMaxY - d.localMinY0;
+//                    console.log('areaHeight', areaHeight);
+//                    console.log('areaHeight scaled', yScale(areaHeight));
+//                    var yOffset = yScale(areaHeight);
+//                    console.log('vert offset', yOffset);
+//
+//                    return [yOffset - 20, -chartWidth / 2 + xScale(d.x)];
+//                })
+                .offset([-10,0])
                     .html(function (d) {
-                        return "<strong>X:</strong> <span style='color:red'>" + d.x + "</span>";
-                        console.log('tooltip obj', d);
+                        return 'x:' + d.x + '<br/>y: ' + d.y;
+//                        console.log('tooltip obj', d);
                     });
 
 
@@ -800,6 +805,7 @@ define([
                     container.append("g").classed("yTitle", true);
                     container.append("g").classed("y2Title", true);
                     container.append("g").classed("xTitle", true);
+                    container.append("g").classed("area-tooltip", true);
                 }
 
                 svg.transition().attr({
@@ -843,6 +849,68 @@ define([
                 area.interpolate(lineInterpolation);
                 var datearray = [];
 
+
+                tooltipBubbles = [];
+                stackedData.forEach(function (thisData) {
+                    thisData.values.forEach(function (theseValues) {
+                        tooltipBubbles.push({
+                            x: theseValues.x,
+                            y: (theseValues.y + theseValues.y0)
+                        });
+                    });
+                });
+                console.log('tooltip bubbles', tooltipBubbles);
+
+                tooltipBubblesSvg = svg.select('.area-tooltip').selectAll('.bubble').data(tooltipBubbles);
+
+                tooltipBubblesSvg.enter().append('circle')
+                    .classed('bubble', true)
+                    .attr({
+                        r: 4
+                    })
+                    .on('mouseover', function (d) {
+                        d3.select(this)
+                            .style({
+                                opacity: 1,
+                                stroke: 'white',
+                            fill:'#525252'
+                            });
+                    tip.show(d);
+//                        dispatch.mouseover(d);
+                    })
+                    .on('mouseout', function () {
+                        d3.select(this)
+                            .style({
+                                opacity: 0, // Re-sets the opacity of the circle
+                                stroke: 'white'
+                            });
+//                        dispatch.mouseout([]);
+                    });
+
+                tooltipBubblesSvg.transition()
+                    .duration(transitionDuration)
+                    .ease(ease)
+                    .style({
+                        fill: function (d) {
+                            return d.color;
+                        },
+                        opacity: 0,
+                        stroke: '#ededed' // may want to leave this to the CSS so that the dev can set it to be the same as the BG color of the chart
+                    })
+                    .attr({
+                        cx: function (d) {
+                            return xScale(d.x);
+                        },
+                        cy: function (d) {
+                            return yScale(d.y);
+                        }
+                    });
+
+                tooltipBubblesSvg.exit().transition().style({
+                    opacity: 0
+                }).remove();
+
+
                 // stacked area
                 areaSvg = svg.select('.area-group').selectAll('path.area')
                     .data(stackedData, function (d) {
@@ -875,18 +943,36 @@ define([
                         var closest = selected.reduce(function (prev, curr) {
                             return (Math.abs(curr.x - goal) < Math.abs(prev.x - goal) ? curr : prev);
                         });
-                    // need to get the max y value in this data series as we need
-                    // to offest the tooltip by it, so that it plots where we want to
-                    var localMaxY = d3.max(selected, function(d){return d.y + d.y0});
-                    var localMinY = d3.min(selected, function(d){return d.y + d.y0});
-                    var localMinY0 = d3.min(selected, function(d){return d.y0});
-                    console.log('selected',selected);
-                    console.log('local max y', localMaxY);
-                    closest.localMaxY = localMaxY;
-                    closest.localMinY = localMinY;
-                    closest.localMinY0 = localMinY0;
+                        // need to get the max y value in this data series as we need
+                        // to offest the tooltip by it, so that it plots where we want to
+                        var localMaxY = d3.max(d.values, function (d) {
+                            return d.y + d.y0
+                        });
+                        var localMinY = d3.min(d.values, function (d) {
+                            return d.y + d.y0
+                        });
+                        var localMinY0 = d3.min(d.values, function (d) {
+                            return d.y0
+                        });
+                        //console.log('selected',selected);
+                        console.log('local max y', localMaxY);
+                        closest.localMaxY = localMaxY;
+                        closest.localMinY = localMinY;
+                        closest.localMinY0 = localMinY0;
+                        console.log('local min y0', localMinY0);
                         console.log('closest', closest);
-                        tip.show(closest);
+                        //                        tip.show(closest);
+
+                        //
+                        //                        toolTip.transition()
+                        //                            .duration(200)
+                        //                            .style("opacity", .9);
+                        //
+                        //                        toolTip.html(d.name)
+                        //                            .style("left", (0) + "px")
+                        //                            .style("top", (0) + "px");
+                        //
+                        //                        console.log('tooltip', toolTip);
                     })
                     .style('stroke-width', '1px');
 
