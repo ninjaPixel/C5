@@ -868,34 +868,34 @@ define([
                     .attr({
                         r: 4
                     })
+                .style({
+                                opacity: 0,
+                                stroke: 'white',
+                            fill:'#525252'
+                            })
                     .on('mouseover', function (d) {
                         d3.select(this)
                             .style({
-                                opacity: 1,
-                                stroke: 'white',
-                            fill:'#525252'
+                                opacity: 1
                             });
                     tip.show(d);
-//                        dispatch.mouseover(d);
                     })
                     .on('mouseout', function () {
                         d3.select(this)
                             .style({
-                                opacity: 0, // Re-sets the opacity of the circle
-                                stroke: 'white'
+                                opacity: 0
                             });
-//                        dispatch.mouseout([]);
+                    tip.hide();
                     });
 
                 tooltipBubblesSvg.transition()
-                    .duration(transitionDuration)
+                    .duration(0)
                     .ease(ease)
                     .style({
                         fill: function (d) {
                             return d.color;
                         },
-                        opacity: 0,
-                        stroke: '#ededed' // may want to leave this to the CSS so that the dev can set it to be the same as the BG color of the chart
+                        opacity: 0
                     })
                     .attr({
                         cx: function (d) {
@@ -906,9 +906,7 @@ define([
                         }
                     });
 
-                tooltipBubblesSvg.exit().transition().style({
-                    opacity: 0
-                }).remove();
+                tooltipBubblesSvg.exit().transition().remove();
 
 
                 // stacked area
