@@ -41,63 +41,63 @@ define([
                      ],
         selectionOpacity = 0.5,
         colors = ['rgb(255,255,204)', 'rgb(217,240,163)', 'rgb(173,221,142)', 'rgb(120,198,121)', 'rgb(65,171,93)', 'rgb(35,132,67)', 'rgb(0,90,50)'],
-        colors2 = ['rgb(247,252,253)','rgb(224,236,244)','rgb(191,211,230)','rgb(158,188,218)','rgb(140,150,198)','rgb(140,107,177)','rgb(136,65,157)','rgb(129,15,124)','rgb(77,0,75)'],              
-    categories = [
-                {
-            name: 'Personal users',
-            selected: true,
-            color: colors2[6],
-            textColor: '#525252',
-            opacity: selectionOpacity,
-            type: 'line' // area or line
+        colors2 = ['rgb(247,252,253)', 'rgb(224,236,244)', 'rgb(191,211,230)', 'rgb(158,188,218)', 'rgb(140,150,198)', 'rgb(140,107,177)', 'rgb(136,65,157)', 'rgb(129,15,124)', 'rgb(77,0,75)'],
+        categories = [
+            {
+                name: 'Personal users',
+                selected: true,
+                color: colors2[6],
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
                 },
-        {
-            name: 'Personal users (do not click ATM)',
-            selected: false,
-            color: colors[1],
-            textColor: '#525252',
-            opacity: selectionOpacity,
-            type: 'area' // area or line
+            {
+                name: 'Personal users (do not click ATM)',
+                selected: false,
+                color: colors[1],
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area' // area or line
                 },
-        {
-            name: 'Corporate users',
-            selected: true,
-            color: colors[2],
-            textColor: '#525252',
-            opacity: selectionOpacity,
-            type: 'area'
+            {
+                name: 'Corporate users',
+                selected: true,
+                color: colors[2],
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
                 },
-        {
-            name: 'Club users',
-            selected: true,
-            color: colors[3],
-            textColor: '#525252',
-            opacity: selectionOpacity,
-            type: 'area'
+            {
+                name: 'Club users',
+                selected: true,
+                color: colors[3],
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
                 },
-        {
-            name: 'Private Client and Private Banking users',
-            selected: true,
-            color: colors[4],
-            textColor: '#525252',
-            opacity: selectionOpacity,
-            type: 'area'
+            {
+                name: 'Private Client and Private Banking users',
+                selected: true,
+                color: colors[4],
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
                 },
-        {
-            name: 'Funds Agent users',
-            selected: true,
-            color: colors[5],
-            textColor: '#525252',
-            opacity: selectionOpacity,
-            type: 'area'
+            {
+                name: 'Funds Agent users',
+                selected: true,
+                color: colors[5],
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
                 },
-        {
-            name: 'Funds Shareholder users',
-            selected: true,
-            color: colors[6],
-            textColor: '#525252',
-            opacity: selectionOpacity,
-            type: 'area'
+            {
+                name: 'Funds Shareholder users',
+                selected: true,
+                color: colors[6],
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
                 }];
 
     var formatData = function () {
@@ -118,7 +118,7 @@ define([
                     values: valueSet,
                     color: thisCategory.color,
                     type: thisCategory.type
-                    
+
 
                 });
             }
@@ -128,18 +128,29 @@ define([
     };
 
     var margin = {
-        top: 30,
+        top: 10,
         bottom: 60,
         left: 100,
         right: 100
     };
     var stackedArea = d3.ninja.stackedAreaWithSecondaryAxisLines();
     stackedArea.title('Customer Category');
-    stackedArea.yAxis1Title('Cumulative Count (area plot)');
-    stackedArea.yAxis2Title('Count (line plot)');
+    stackedArea.yAxis1Title('User Count (area plot)');
+    stackedArea.yAxis2Title('User Count (line plot)');
     stackedArea.xAxisTitle('Date');
     stackedArea.yMin(0);
     stackedArea.margin(margin);
+    stackedArea.height(600);
+    stackedArea.width(900);
+
+    var stackedAreaContext = d3.ninja.stackedAreaWithSecondaryAxisLines();
+    stackedAreaContext.yMin(0);
+    stackedAreaContext.margin(margin);
+    stackedAreaContext.height(150);
+    stackedAreaContext.width(900);
+    stackedAreaContext.showTooltip(false);
+    stackedAreaContext.showYAxes(false);
+
     // LEGEND
     var legend = d3.ninja.horizontalLegendSelectable();
     var legendMargin = {
@@ -170,6 +181,10 @@ define([
             .datum(data)
             .call(stackedArea);
 
+        d3.select('#context')
+            .datum(data)
+            .call(stackedAreaContext);
+
         d3.select('#legend')
             .datum(categories.slice().reverse())
             .call(legend);
@@ -184,6 +199,9 @@ define([
     d3.select('#chart')
         .datum(data)
         .call(stackedArea);
+    d3.select('#context')
+        .datum(data)
+        .call(stackedAreaContext);
     d3.select('#legend')
         .datum(categories.slice().reverse())
         .call(legend);

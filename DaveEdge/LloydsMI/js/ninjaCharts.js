@@ -642,6 +642,8 @@ define([
             yAxis1Title = '',
             yAxis2Title = '',
             xAxisTitle = '',
+            showYAxes = true,
+            showTooltip = true,
             yMaxUserDefined,
             yMinUserDefined,
             lineOpacity = 0.8, //defaultValues.lineOpacity,
@@ -753,9 +755,9 @@ define([
                     .domain([minY, maxY])
                     .range([chartHeight, 0]);
 
-                    var yScale2 = d3.scale.linear()
-                        .domain([minY2, maxY2])
-                        .range([chartHeight, 0]);
+                var yScale2 = d3.scale.linear()
+                    .domain([minY2, maxY2])
+                    .range([chartHeight, 0]);
 
 
                 // axis of evil
@@ -763,10 +765,11 @@ define([
                     .scale(xScale)
                     .orient('bottom');
 
+                
                 var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient('left');
-
+                
 
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
@@ -915,7 +918,7 @@ define([
                         .attr('x', chartWidth / 2);
 
                 }
-                
+
                 function plotSecondaryAxisAndLines() {
 
 
@@ -1012,7 +1015,6 @@ define([
                             });
                         });
                     });
-                    console.log(lineData);
                     lineData.forEach(function (thisLine) {
                         thisLine.values.forEach(function (thisPoint) {
                             tooltipBubbles.push({
@@ -1046,7 +1048,6 @@ define([
                                 .style({
                                     opacity: 1
                                 });
-                            console.log(d.x, d.y, d.name);
                             tip.show(d);
                         })
                         .on('mouseout', function () {
@@ -1072,7 +1073,9 @@ define([
 
                 plotLabels();
                 plotSecondaryAxisAndLines();
-                plotToolTips();
+                if (showTooltip) {
+                    plotToolTips();
+                }
             });
         }
 
@@ -1171,6 +1174,19 @@ define([
             lineOpacity = _x;
             return this;
         };
+
+        exports.showYAxes = function (_x) {
+            if (!arguments.length) return showYAxes;
+            showYAxes = _x;
+            return this;
+        };
+
+        exports.showTooltip = function (_x) {
+            if (!arguments.length) return showTooltip;
+            showTooltip = _x;
+            return this;
+        };
+
 
         d3.rebind(exports, dispatch, 'on');
         return exports;
