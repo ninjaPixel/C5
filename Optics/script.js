@@ -8,212 +8,42 @@ require.config({
         'moment': '../../js/moment.v2.8.1.min',
         'moment-timezone': '../../js/moment-timezone.v0.2.1.min',
         'moment-timezone-data': '../../js/moment-timezone-with-data-2010-2020',
-        'jquery': 'js/jquery-2.0.0.min',
+        'jquery': '../../js/jquery-2.0.0.min',
         'd3': 'js/d3.v3.4.11.min',
         'queue': '../../js/queue.min',
         'XDate': '../../js/XDate',
-        'jqueryUI': 'js/jquery-ui-1.11.1/jquery-ui.min',
-        'dimple': 'js/dimple.v2.1.0.min',
-        'ninjaCharts': 'js/ninjaCharts'
-    },
-    waitSeconds: 10
-
+        'jqueryUI': '../../js/jquery-ui-1.11.1/jquery-ui.min',
+        'dimple':'js/dimple.v2.1.0.min'
+    }
 });
 
 define([
     // Load our app module and pass it to our definition function
-    'd3', 'ninjaCharts'
-], function (d3, ninjaCharts) {
+    'd3', 'dimple'
+], function (d3, dimple) {
 
-    var parseDate = d3.time.format('%e/%m/%y').parse;
-    lloydsJSON.forEach(function (d) {
-        d.Date = parseDate(d.Date);
-    });
-        console.log('parseData',lloydsJSON.slice());
-
-    var properties = ['Personal users',
-        'Corporate users',
-        'Club users',
-        'Private Client and Private Banking users',
-        'Funds Agent users',
-        'Funds Shareholder users',
- //        'Total'
-                     ],
-        selectionOpacity = 0.5,
-        colors = ['rgb(255,255,204)', 'rgb(217,240,163)', 'rgb(173,221,142)', 'rgb(120,198,121)', 'rgb(65,171,93)', 'rgb(35,132,67)', 'rgb(0,90,50)'],
-        colors2 = ['rgb(247,252,253)', 'rgb(224,236,244)', 'rgb(191,211,230)', 'rgb(158,188,218)', 'rgb(140,150,198)', 'rgb(140,107,177)', 'rgb(136,65,157)', 'rgb(129,15,124)', 'rgb(77,0,75)'],
-        categories = [
-            {
-                name: 'Personal users',
-                selected: true,
-                color: colors2[6],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'line' // area or line
-                },
-            {
-                name: 'Personal users (do not click ATM)',
-                selected: false,
-                color: colors[1],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area' // area or line
-                },
-            {
-                name: 'Corporate users',
-                selected: true,
-                color: colors[2],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area'
-                },
-            {
-                name: 'Club users',
-                selected: true,
-                color: colors[3],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area'
-                },
-            {
-                name: 'Private Client and Private Banking users',
-                selected: true,
-                color: colors[4],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area'
-                },
-            {
-                name: 'Funds Agent users',
-                selected: true,
-                color: colors[5],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area'
-                },
-            {
-                name: 'Funds Shareholder users',
-                selected: true,
-                color: colors[6],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area'
-                }];
-
-    var formatData = function () {
-        var formatedData = [];
-        categories.forEach(function (thisCategory) {
-            if (thisCategory.selected === true) {
-                var valueSet = [];
-                lloydsJSON.forEach(function (d) {
-                    valueSet.push({
-                        x: d.Date,
-                        y: d[thisCategory.name]
-                    });
-
-
-                });
-                formatedData.push({
-                    name: thisCategory.name,
-                    values: valueSet,
-                    color: thisCategory.color,
-                    type: thisCategory.type
-
-
-                });
-            }
-        });
-
-        return formatedData;
-    };
-
-    var margin = {
-        top: 10,
-        bottom: 60,
-        left: 100,
-        right: 100
-    };
-    var stackedArea = d3.ninja.stackedAreaWithSecondaryAxisLines();
-    stackedArea.title('Customer Category');
-    stackedArea.yAxis1Title('User Count (area plot)');
-    stackedArea.yAxis2Title('User Count (line plot)');
-    stackedArea.xAxisTitle('Date');
-    stackedArea.yMin(0);
-    stackedArea.margin(margin);
-    stackedArea.height(600);
-    stackedArea.width(900);
-
-    var stackedAreaContext = d3.ninja.stackedAreaWithSecondaryAxisLines();
-    stackedAreaContext.yMin(0);
-    stackedAreaContext.margin(margin);
-    stackedAreaContext.height(150);
-    stackedAreaContext.width(900);
-    stackedAreaContext.showTooltip(false);
-    stackedAreaContext.showYAxes(false);
-
-    // LEGEND
-    var legend = d3.ninja.horizontalLegendSelectable();
-    var legendMargin = {
-        top: 10,
-        bottom: 0,
-        left: margin.left,
-        right: 0
-    };
-    legend.margin(legendMargin);
-    legend.width(650);
-    legend.itemWidth(450);
-    legend.fontColor('#525252');
-    legend.fontSize(20);
-    legend.on('click', function (d) {
-        console.log('Legend Click:', d);
-
-        // update the selectedCategories array to reflect what the user has just clicked
-        var filteredCat = categories.filter(function (dd) {
-            return dd.name === d.name
-        });
-        filteredCat[0].selected = !filteredCat[0].selected;
-        console.log('categories', categories);
-
-        // now we need to redraw the chart, given the new categories selected
-        var data = formatData();
-
-        d3.select('#chart')
-            .datum(data)
-            .call(stackedArea);
-
-        d3.select('#context')
-            .datum(data)
-            .call(stackedAreaContext);
-
-        d3.select('#legend')
-            .datum(categories.slice().reverse())
-            .call(legend);
-    });
-
-
-    // INITIAL PLOT
-
-
-    var data = formatData();
-
-    d3.select('#chart')
-        .datum(data)
-        .call(stackedArea);
-    d3.select('#context')
-        .datum(data)
-        .call(stackedAreaContext);
-    d3.select('#legend')
-        .datum(categories.slice().reverse())
-        .call(legend);
-
-
+    var svg = dimple.newSvg("body", 800, 600);
+    var data = [
+        {
+            "Word": "Hello",
+            "Awesomeness": 2000
+        },
+        {
+            "Word": "World",
+            "Awesomeness": 3000
+        }
+    ];
+    var chart = new dimple.chart(svg, data);
+    chart.addCategoryAxis("x", "Word");
+    chart.addMeasureAxis("y", "Awesomeness");
+    chart.addSeries(null, dimple.plot.bar);
+    chart.draw();
 });
 
 
 // DATA
 
-var lloydsJSON = [
-    {
+var lloydsJSON = [{
         "Date": "31/7/08",
         "Personal users": 16509,
         "Corporate users": 404,
@@ -903,16 +733,16 @@ var lloydsJSON = [
         "Funds Shareholder users": 1171,
         "Total": 37190
     },
- //    {
- //        "Date": "31/01/11",
- //        "Personal users": 33827,
- //        "Corporate users": 1235,
- //        "Club users": 501,
- //        "Private Client and Private Banking users": 549,
- //        "Funds Agent users": 109,
- //        "Funds Shareholder users": 1182,
- //        "Total": 37403
- //    },
+    {
+        "Date": "31/01/11",
+        "Personal users": 33827,
+        "Corporate users": 1235,
+        "Club users": 501,
+        "Private Client and Private Banking users": 549,
+        "Funds Agent users": 109,
+        "Funds Shareholder users": 1182,
+        "Total": 37403
+    },
     {
         "Date": "31/1/11",
         "Personal users": 34030,
@@ -953,18 +783,18 @@ var lloydsJSON = [
         "Funds Shareholder users": 1210,
         "Total": 38032
     },
- //    {
- //        "Date": "28/02/11",
- //        "Personal users": 34565,
- //        "Corporate users": 1294,
- //        "Club users": 503,
- //        "Private Client and Private Banking users": 562,
- //        "Funds Agent users": 108,
- //        "Funds Shareholder users": 1220,
- //        "Total": 38252
- //    },
     {
         "Date": "28/02/11",
+        "Personal users": 34565,
+        "Corporate users": 1294,
+        "Club users": 503,
+        "Private Client and Private Banking users": 562,
+        "Funds Agent users": 108,
+        "Funds Shareholder users": 1220,
+        "Total": 38252
+    },
+    {
+        "Date": "28/2/11",
         "Personal users": 34768,
         "Corporate users": 1303,
         "Club users": 505,
@@ -1014,7 +844,7 @@ var lloydsJSON = [
         "Total": 39208
     },
     {
-        "Date": "31/03/11",
+        "Date": "31/3/11",
         "Personal users": 35680,
         "Corporate users": 1352,
         "Club users": 516,
@@ -1024,7 +854,7 @@ var lloydsJSON = [
         "Total": 39456
     },
     {
-        "Date": "4/04/11",
+        "Date": "4/04/10",
         "Personal users": 35680,
         "Corporate users": 1352,
         "Club users": 516,
@@ -1054,7 +884,7 @@ var lloydsJSON = [
         "Total": 39930
     },
     {
-        "Date": "27/04/11",
+        "Date": "27/04/2011",
         "Personal users": 36300,
         "Corporate users": 1390,
         "Club users": 517,
@@ -2504,7 +2334,7 @@ var lloydsJSON = [
         "Total": 68461
     },
     {
-        "Date": "31/07/13",
+        "Date": "31 jun 13",
         "Personal users": 63041,
         "Corporate users": 2633,
         "Club users": 662,

@@ -745,7 +745,8 @@ define([
                 if (typeof yMaxUserDefined !== 'undefined') {
                     maxY = yMaxUserDefined;
                 }
-
+console.log('MinDate:', minDate, ', MinY:',minY, ', MinY2:', minY2);
+                console.log('MaxDate:', maxDate, ', MaxY:',maxY, ', MaxY2:', maxY2);
                 // create the sclaing functions
                 var xScale = d3.time.scale()
                     .range([0, chartWidth]);
@@ -828,7 +829,7 @@ define([
                         return xScale(d.x);
                     })
                     .y0(function (d) {
-                        return yScale(d.y0);
+                        return yScale(d.y0 + 0);
                     })
                     .y1(function (d) {
                         return yScale(d.y0 + d.y);
