@@ -24,7 +24,7 @@ require.config({
 define([
     // Load our app module and pass it to our definition function
     'd3', 'ninjaCharts', 'lloydsMI', 'moment'
-], function (d3, ninjaCharts, lloydsMI,moment) {
+], function (d3, ninjaCharts, lloydsMI, moment) {
     var rawData = getRawLloydsData();
 
     var lloydsCategoriesToKeep = [
@@ -37,14 +37,14 @@ define([
     'Breakdown of live users;Total',
     'User status breakdown;New unapproved users',
     'User status breakdown;Users who have consented to email marketing',
-    'User status breakdown;Users who logged in the last month (i.e. since 2008.10.31)',
+ //    'User status breakdown;Users who logged in the last month (i.e. since 2008.10.31)', // need to merge on Power Query
     'User status breakdown;Users locked out, unable to login',
     'User status breakdown;Awaiting Physical Evidence users',
     'User status breakdown;Suspended users',
     'User status breakdown;Obsolete users',
     'User status breakdown;Live Users, able to login',
     'User status breakdown;Total Users (including locked out, obsolete etc.)',
-    'User status breakdown;Users who logged in the last month',
+ //    'User status breakdown;Users who logged in the last month',
     'User status breakdown;Personal users who logged in in the last month',
  //    'User status breakdown; - Users who logged in the last week',
  //    'User status breakdown; - Personal users who logged in in the last week',
@@ -52,95 +52,231 @@ define([
     'User status breakdown;Users who logged in in the last month',
     'User status breakdown;Active Users - Logged in in the last 3 months',
     'User status breakdown;Dormant Users - Logged in more than 3 months ago',
-    'User status breakdown;Inactive Users - Users that have never logged in'];
-
-
+    'User status breakdown;Inactive Users - Users that have never logged in',
+    'New Users;New Registrations (total including awaiting approval)',
+    'New Users;New Registrations (approved and live)',
+    'New Users;New Registrations (who have logged on)'];
 
     var lloydsJSON = filterLloydsRawData(lloydsCategoriesToKeep);
-    
-
-
 
     var parseDate = d3.time.format('%d/%m/%Y').parse;
     lloydsJSON.forEach(function (d) {
         d.Date = parseDate(d.Date);
     });
-    
-    lloydsJSON = lloydsJSON.filter(function(d){
-        var startDate = moment('2013-01-01'),
+
+    lloydsJSON = lloydsJSON.filter(function (d) {
+        var startDate = moment('2008-07-01'),
             endDate = moment('2014-09-15');
-         var keepRecord = moment(d.Date).isAfter(startDate) && moment(d.Date).isBefore(endDate);
-        
+        var keepRecord = moment(d.Date).isAfter(startDate) && moment(d.Date).isBefore(endDate);
+
         return keepRecord;
     });
     console.log('filtered raw data', lloydsJSON);
     //    console.log(lloydsJSON);
 
-    var properties = ['Personal users',
-        'Corporate users',
-        'Club users',
-        'Private Client and Private Banking users',
-        'Funds Agent users',
-        'Funds Shareholder users',
- //        'Total'
-                     ],
-        selectionOpacity = 0.5,
+    var selectionOpacity = 0.5,
         colors = ['rgb(255,255,204)', 'rgb(217,240,163)', 'rgb(173,221,142)', 'rgb(120,198,121)', 'rgb(65,171,93)', 'rgb(35,132,67)', 'rgb(0,90,50)'],
         colors2 = ['rgb(247,252,253)', 'rgb(224,236,244)', 'rgb(191,211,230)', 'rgb(158,188,218)', 'rgb(140,150,198)', 'rgb(140,107,177)', 'rgb(136,65,157)', 'rgb(129,15,124)', 'rgb(77,0,75)'],
+        colors3 = ['rgb(255,255,178)', 'rgb(254,204,92)', 'rgb(253,141,60)', 'rgb(240,59,32)', 'rgb(189,0,38)'],
+        colorRamp = d3.scale.linear().domain([0, 7]).range(['#3f007d','#9e9ac8']),
+        colorRamp2 = d3.scale.linear().domain([0, 7]).range(['#fcae91', '#a50f15']),
+        colorRamp3 = d3.scale.linear().domain([0, 5]).range(['#d9f0a3','#78c679']),
         categories = [
+
             {
-                name: 'User status breakdown;New unapproved users',
-                selected: true,
-                color: colors2[6],
+                name: 'New Registrations (who have logged on)',
+                fullName: 'New Users;New Registrations (who have logged on)',
+                selected: false,
+                color: colorRamp2(0),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
                 },
-            
             {
-                name: 'Breakdown of live users;Personal users',
+                name: 'New Registrations (total including awaiting approval)',
+                fullName: 'New Users;New Registrations (total including awaiting approval)',
+                selected: false,
+                color: colorRamp2(1),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'New Registrations (approved and live)',
+                fullName: 'New Users;New Registrations (approved and live)',
+                selected: false,
+                color: colorRamp2(2),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Total Users (including locked out, obsolete etc.)',
+                fullName: 'User status breakdown;Total Users (including locked out, obsolete etc.)',
+                selected: false,
+                color: colorRamp2(3),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Live Users, able to login',
+                fullName: 'User status breakdown;Live Users, able to login',
+                selected: false,
+                color: colorRamp2(4),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Users locked out, unable to login',
+                fullName: 'User status breakdown;Users locked out, unable to login',
+                selected: false,
+                color: colorRamp2(5),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Obsolete users',
+                fullName: 'User status breakdown;Obsolete users',
+                selected: false,
+                color: colorRamp2(6),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Suspended users',
+                fullName: 'User status breakdown;Suspended users',
+                selected: false,
+                color: colorRamp2(7),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Awaiting Physical Evidence users',
+                fullName: 'User status breakdown;Awaiting Physical Evidence users',
+                selected: false,
+                color: colorRamp(7),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Users who have consented to email marketing',
+                fullName: 'User status breakdown;Users who have consented to email marketing',
+                selected: false,
+                color: colorRamp(6),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'New unapproved users',
+                fullName: 'User status breakdown;New unapproved users',
+                selected: false,
+                color: colorRamp(5),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Users that have never logged in',
+                fullName: 'User status breakdown;Inactive Users - Users that have never logged in',
+                selected: false,
+                color: colorRamp(4),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Logged in more than 3 months ago',
+                fullName: 'User status breakdown;Dormant Users - Logged in more than 3 months ago',
+                selected: false,
+                color: colorRamp(3),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Logged in in the last 3 months',
+                fullName: 'User status breakdown;Active Users - Logged in in the last 3 months',
+                selected: false,
+                color: colorRamp(2),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'line' // area or line
+                },
+            {
+                name: 'Users who logged in in the last month',
+                fullName: 'User status breakdown;Users who logged in in the last month',
                 selected: true,
-                color: colors[1],
+                color: colorRamp(1),
                 textColor: '#525252',
                 opacity: selectionOpacity,
-                type: 'area'
+                type: 'line' // area or line
                 },
             {
-                name: 'Breakdown of live users;Corporate users',
+                name: 'Personal users who logged in in the last month',
+                fullName: 'User status breakdown;Personal users who logged in in the last month',
                 selected: false,
-                color: colors[2],
+                color: colorRamp(0),
                 textColor: '#525252',
                 opacity: selectionOpacity,
-                type: 'area'
+                type: 'line' // area or line
                 },
             {
-                name: 'Breakdown of live users;Club users',
+                name: 'Personal users',
+                fullName: 'Breakdown of live users;Personal users',
                 selected: false,
-                color: colors[3],
+                color: colorRamp3(0),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'area'
                 },
             {
-                name: 'Breakdown of live users;Private Client and Private Banking users',
-                selected: false,
-                color: colors[4],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area'
-                },
-            {
-                name: 'Breakdown of live users;Funds Agent users',
-                selected: false,
-                color: colors[5],
-                textColor: '#525252',
-                opacity: selectionOpacity,
-                type: 'area'
-                },
-            {
-                name: 'Breakdown of live users;Funds Shareholder users',
+                name: 'Corporate users',
+                fullName: 'Breakdown of live users;Corporate users',
                 selected: true,
-                color: colors[6],
+                color: colorRamp3(1),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
+                },
+            {
+                name: 'Club users',
+                fullName: 'Breakdown of live users;Club users',
+                selected: true,
+                color: colorRamp3(2),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
+                },
+            {
+                name: 'Private Client and Private Banking users',
+                fullName: 'Breakdown of live users;Private Client and Private Banking users',
+                selected: true,
+                color: colorRamp3(3),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
+                },
+            {
+                name: 'Funds Agent users',
+                fullName: 'Breakdown of live users;Funds Agent users',
+                selected: true,
+                color: colorRamp3(4),
+                textColor: '#525252',
+                opacity: selectionOpacity,
+                type: 'area'
+                },
+            {
+                name: 'Funds Shareholder users',
+                fullName: 'Breakdown of live users;Funds Shareholder users',
+                selected: true,
+                color: colorRamp3(5),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'area'
@@ -154,7 +290,7 @@ define([
                 lloydsJSON.forEach(function (d) {
                     valueSet.push({
                         x: d.Date,
-                        y: d[thisCategory.name]
+                        y: d[thisCategory.fullName]
                     });
 
 
@@ -171,7 +307,7 @@ define([
         });
 
 
-    console.log('formated data', formatedData);
+        console.log('formated data', formatedData);
         return formatedData;
     };
 
@@ -190,6 +326,7 @@ define([
     stackedArea.margin(margin);
     stackedArea.height(600);
     stackedArea.width(900);
+    stackedArea.lineOpacity(0.8);
 
     var stackedAreaContext = d3.ninja.stackedAreaWithSecondaryAxisLines();
     stackedAreaContext.yMin(0);
@@ -208,10 +345,10 @@ define([
         right: 0
     };
     legend.margin(legendMargin);
-    legend.width(650);
+    legend.width(450);
     legend.itemWidth(450);
     legend.fontColor('#525252');
-    legend.fontSize(20);
+    legend.fontSize(12);
     legend.on('click', function (d) {
         console.log('Legend Click:', d);
 
@@ -220,7 +357,7 @@ define([
             return dd.name === d.name
         });
         filteredCat[0].selected = !filteredCat[0].selected;
-        console.log('categories', categories);
+        //        console.log('categories', categories);
 
         // now we need to redraw the chart, given the new categories selected
         var data = formatData();
@@ -229,9 +366,9 @@ define([
             .datum(data)
             .call(stackedArea);
 
-//        d3.select('#context')
-//            .datum(data)
-//            .call(stackedAreaContext);
+        //        d3.select('#context')
+        //            .datum(data)
+        //            .call(stackedAreaContext);
 
         d3.select('#legend')
             .datum(categories.slice().reverse())
@@ -247,15 +384,12 @@ define([
     d3.select('#chart')
         .datum(data)
         .call(stackedArea);
-//    d3.select('#context')
-//        .datum(data)
-//        .call(stackedAreaContext);
+    //    d3.select('#context')
+    //        .datum(data)
+    //        .call(stackedAreaContext);
     d3.select('#legend')
         .datum(categories.slice().reverse())
         .call(legend);
 
 
 });
-
-
-// DATA

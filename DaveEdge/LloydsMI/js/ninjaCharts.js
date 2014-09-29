@@ -688,6 +688,10 @@ define([
                     return d.type === type.area;
                 }));
 
+                                minY = null;
+                maxY = minY;
+                minY2 = null;
+                maxY2 = minY2;
                 stackedData.forEach(function (thisData) {
                     var thisExtent = d3.extent(thisData.values, function (d) {
                         return d.y + d.y0;
@@ -709,7 +713,7 @@ define([
                     }
                 });
 
-                // get min max y values of the secondary (i.e. line) axis, if it exist
+                // get min max y values of the secondary (i.e. line) axis, if it exists
                 // if we are able to calculate the min/max y2 values then it means that they exist
                 // i.e. user also wants a line plotted on the chart
                 // and later code, in this module, will then create variable relating to the secondary plot.
@@ -745,8 +749,8 @@ define([
                 if (typeof yMaxUserDefined !== 'undefined') {
                     maxY = yMaxUserDefined;
                 }
-console.log('MinDate:', minDate, ', MinY:',minY, ', MinY2:', minY2);
-                console.log('MaxDate:', maxDate, ', MaxY:',maxY, ', MaxY2:', maxY2);
+                console.log('MinDate:', minDate, ', MinY:', minY, ', MinY2:', minY2);
+                console.log('MaxDate:', maxDate, ', MaxY:', maxY, ', MaxY2:', maxY2);
                 // create the sclaing functions
                 var xScale = d3.time.scale()
                     .range([0, chartWidth]);
@@ -766,11 +770,11 @@ console.log('MinDate:', minDate, ', MinY:',minY, ', MinY2:', minY2);
                     .scale(xScale)
                     .orient('bottom');
 
-                
+
                 var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient('left');
-                
+
 
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
