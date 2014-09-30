@@ -652,6 +652,7 @@ define([
             areaSvg,
             tooltipBubbles,
             tooltipBubblesSvg,
+            areaStroke = 'white',
             type = {
                 area: 'area',
                 line: 'line'
@@ -688,7 +689,7 @@ define([
                     return d.type === type.area;
                 }));
 
-                                minY = null;
+                minY = null;
                 maxY = minY;
                 minY2 = null;
                 maxY2 = minY2;
@@ -869,7 +870,7 @@ define([
                         return area(d.values);
                     })
                     .style('stroke', function (d) {
-                        return 'white'; //d.colour;
+                        return areaStroke;
                     })
                     .style('fill', function (d) {
                         return d.color;
@@ -1191,7 +1192,11 @@ define([
             showTooltip = _x;
             return this;
         };
-
+        exports.areaStroke = function (_x) {
+            if (!arguments.length) return areaStroke;
+            areaStroke = _x;
+            return this;
+        };
 
         d3.rebind(exports, dispatch, 'on');
         return exports;

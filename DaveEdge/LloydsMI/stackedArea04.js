@@ -78,9 +78,9 @@ define([
         colors = ['rgb(255,255,204)', 'rgb(217,240,163)', 'rgb(173,221,142)', 'rgb(120,198,121)', 'rgb(65,171,93)', 'rgb(35,132,67)', 'rgb(0,90,50)'],
         colors2 = ['rgb(247,252,253)', 'rgb(224,236,244)', 'rgb(191,211,230)', 'rgb(158,188,218)', 'rgb(140,150,198)', 'rgb(140,107,177)', 'rgb(136,65,157)', 'rgb(129,15,124)', 'rgb(77,0,75)'],
         colors3 = ['rgb(255,255,178)', 'rgb(254,204,92)', 'rgb(253,141,60)', 'rgb(240,59,32)', 'rgb(189,0,38)'],
-        colorRamp = d3.scale.linear().domain([0, 7]).range(['#3f007d','#9e9ac8']),
+        colorRamp = d3.scale.linear().domain([0, 7]).range(['#3f007d','#807dba']),
         colorRamp2 = d3.scale.linear().domain([0, 7]).range(['#fcae91', '#a50f15']),
-        colorRamp3 = d3.scale.linear().domain([0, 5]).range(['#d9f0a3','#78c679']),
+        colorRamp3 = d3.scale.linear().domain([0, 5]).range(['#addd8e','#78c679']),
         categories = [
 
             {
@@ -318,14 +318,14 @@ define([
         right: 100
     };
     var stackedArea = d3.ninja.stackedAreaWithSecondaryAxisLines();
-    stackedArea.title('Customer Category');
+    stackedArea.title('User Count by Category');
     stackedArea.yAxis1Title('User Count (area plot)');
     stackedArea.yAxis2Title('User Count (line plot)');
     stackedArea.xAxisTitle('Date');
     stackedArea.yMin(0);
     stackedArea.margin(margin);
     stackedArea.height(600);
-    stackedArea.width(900);
+    stackedArea.width(800);
     stackedArea.lineOpacity(0.8);
 
     var stackedAreaContext = d3.ninja.stackedAreaWithSecondaryAxisLines();
