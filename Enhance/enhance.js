@@ -34,10 +34,12 @@ define([
     };
     bubbleChart.height(400)
     .width(600)
-    .border(true)
+    .border(false)
     .maxBubbleRadius(25)
     .yAxis1Title('Performance (previous 36 months)')
     .xAxisTitle('Risk')
+    .title('Annualised Performance & Drawdown vs. Risk')
+    .strokeColour('#525252')
     .margin(margin);
 
 

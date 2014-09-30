@@ -1196,7 +1196,7 @@ define([
             if (!arguments.length) return areaStroke;
             areaStroke = _x;
             return this;
-        };        
+        };
         exports.toolTipHoverRadius = function (_x) {
             if (!arguments.length) return toolTipHoverRadius;
             toolTipHoverRadius = _x;
@@ -1416,7 +1416,7 @@ define([
                         d3.select(this)
                             .style({
                                 opacity: bubbleOpacity, // Re-sets the opacity of the circle
-                                stroke: 'white'
+                                stroke: strokeColour
                             });
                         dispatch.mouseout([]);
                     })
@@ -1609,6 +1609,12 @@ define([
         exports.xAxisTitle = function (_x) {
             if (!arguments.length) return xAxisTitle;
             xAxisTitle = _x;
+            return this;
+        };
+
+        exports.title = function (_x) {
+            if (!arguments.length) return title;
+            title = _x;
             return this;
         };
 

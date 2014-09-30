@@ -4,28 +4,13 @@
     stroke: black;
     shape-rendering: crispEdges;
 }
-/*text {
-    font: 20px sans-serif;
-    position: absolute;
-}*/
+text {
+    font: 16px serif;
+/*    position: absolute;*/
+}
 
 @media (max-width: 630px) {
     text {
         font: 10px sans-serif;
     }
-}
-div.tooltip {
-    position: absolute;
-    text-align: center;
-    width: 90px;
-    /*height: 50px;*/
-    height: auto;
-    min-height: 0% !important;
-    padding: 2px;
-    font: 12px sans-serif;
-    color: whitesmoke;
-    background: gray;
-    border: 0;
-    border-bottom-right-radius: 8px;
-    pointer-events: none;
 }

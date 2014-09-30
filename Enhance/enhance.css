@@ -38,3 +38,19 @@ h6 {
     top: 100%;
     left: 0;
 }
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+text {
+    font: 16px Lora;
+/*    position: absolute;*/
+}
+
+@media (max-width: 630px) {
+    text {
+        font: 10px Lora;
+    }
+}

@@ -1,4 +1,4 @@
-colors = ['#003c30','rgb(140,81,10)','rgb(191,129,45)','rgb(223,194,125)','#35978f'];
+colors = ['#c7eae5','rgb(140,81,10)','rgb(191,129,45)','rgb(223,194,125)','#35978f'];
 
 var getEnhanceData = function () {
     var enhanceData = [
