@@ -54,3 +54,16 @@ text {
         font: 10px Lora;
     }
 }
+
+.horizontalGrid  {
+    stroke: lightgrey;
+    opacity: 0.7;
+}
+.verticalGrid  {
+    stroke: lightgrey;
+    opacity: 0.7;
+}
+/*
+.horizontalGrid line {
+      stroke-width: 0;
+}*/

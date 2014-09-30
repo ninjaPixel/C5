@@ -40,6 +40,8 @@ define([
     .xAxisTitle('Risk')
     .title('Annualised Performance & Drawdown vs. Risk')
     .strokeColour('#525252')
+    .bubbleSpill(false)
+    .showGridLines(true)
     .margin(margin);
 
 

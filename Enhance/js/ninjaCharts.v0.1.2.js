@@ -1226,6 +1226,7 @@ define([
             xAxisTitle = '',
             yMaxUserDefined,
             yMinUserDefined,
+            showGridLines = false,
             allowBubblesToSpillOffChart = false;
 
         var dispatch = d3.dispatch('mouseover', 'mouseout', 'click');
@@ -1364,6 +1365,8 @@ define([
                         .append('svg')
                         .classed('chart', true);
                     var container = svg.append('g').classed('container-group', true);
+                    container.append('g').classed('horizontalGrid', true);
+                    container.append('g').classed('verticalGrid', true);
                     container.append('g').classed('chart-group', true);
                     container.append('g').classed('x-axis-group axis', true);
                     container.append('g').classed('y-axis-group axis', true);
@@ -1394,6 +1397,46 @@ define([
                             transform: 'translate(' + xScale(0) + ',' + 0 + ')'
                         })
                         .call(yAxis);
+                }
+
+                if (showGridLines) {
+                    console.log('xscale domain', xScale.domain());
+                    var horizontalLines = svg.select('.horizontalGrid').selectAll('hLines').data(yScale.ticks());
+
+                    horizontalLines.enter()
+                        .append('line')
+                        .classed('hLines', true);
+
+                    horizontalLines.transition().ease(ease)
+                        .attr({
+                            "x1": xScale(xScale.domain()[0]),
+                            "x2": xScale(xScale.domain()[1]),
+                            "y1": function (d) {
+                                return yScale(d);
+                            },
+                            "y2": function (d) {
+                                return yScale(d);
+                            }
+                        });
+
+                    var verticalLines = svg.select('.verticalGrid').selectAll('hLines').data(xScale.ticks());
+
+                    verticalLines.enter()
+                        .append('line')
+                        .classed('hLines', true);
+
+                    verticalLines.transition().ease(ease)
+                        .attr({
+                            "x1": function (d) {
+                                return xScale(d);
+                            },
+                            "x2": function (d) {
+                                return xScale(d);
+                            },
+                            "y1": 0,
+                            "y2": chartHeight
+                        });
+
                 }
                 // Enter, Update, Exit on bubbles
                 var rScale0 = rScale(0);
@@ -1616,8 +1659,12 @@ define([
             if (!arguments.length) return title;
             title = _x;
             return this;
+        }
+        exports.showGridLines = function (_x) {
+            if (!arguments.length) return showGridLines;
+            showGridLines = _x;
+            return this;
         };
-
         d3.rebind(exports, dispatch, 'on');
         return exports;
     };
