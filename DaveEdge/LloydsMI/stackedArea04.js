@@ -71,23 +71,21 @@ define([
 
         return keepRecord;
     });
-    console.log('filtered raw data', lloydsJSON);
-    //    console.log(lloydsJSON);
 
     var selectionOpacity = 0.5,
         colors = ['rgb(255,255,204)', 'rgb(217,240,163)', 'rgb(173,221,142)', 'rgb(120,198,121)', 'rgb(65,171,93)', 'rgb(35,132,67)', 'rgb(0,90,50)'],
         colors2 = ['rgb(247,252,253)', 'rgb(224,236,244)', 'rgb(191,211,230)', 'rgb(158,188,218)', 'rgb(140,150,198)', 'rgb(140,107,177)', 'rgb(136,65,157)', 'rgb(129,15,124)', 'rgb(77,0,75)'],
         colors3 = ['rgb(255,255,178)', 'rgb(254,204,92)', 'rgb(253,141,60)', 'rgb(240,59,32)', 'rgb(189,0,38)'],
-        colorRamp = d3.scale.linear().domain([0, 7]).range(['#3f007d','#807dba']),
-        colorRamp2 = d3.scale.linear().domain([0, 7]).range(['#fcae91', '#a50f15']),
-        colorRamp3 = d3.scale.linear().domain([0, 5]).range(['#addd8e','#78c679']),
+        colorRamp = d3.scale.linear().domain([0, 15]).range(['#737373','#525252']),
+        colorRamp2 = d3.scale.linear().domain([0, 7]).range(['#de77ae', '#c51b7d']),
+        colorRamp3 = d3.scale.linear().domain([0, 5]).range(['#c7e9c0','#006d2c']),
         categories = [
 
             {
                 name: 'New Registrations (who have logged on)',
                 fullName: 'New Users;New Registrations (who have logged on)',
                 selected: false,
-                color: colorRamp2(0),
+                color: colorRamp(0),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -96,7 +94,7 @@ define([
                 name: 'New Registrations (total including awaiting approval)',
                 fullName: 'New Users;New Registrations (total including awaiting approval)',
                 selected: false,
-                color: colorRamp2(1),
+                color: colorRamp(1),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -105,7 +103,7 @@ define([
                 name: 'New Registrations (approved and live)',
                 fullName: 'New Users;New Registrations (approved and live)',
                 selected: false,
-                color: colorRamp2(2),
+                color: colorRamp(2),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -114,7 +112,7 @@ define([
                 name: 'Total Users (including locked out, obsolete etc.)',
                 fullName: 'User status breakdown;Total Users (including locked out, obsolete etc.)',
                 selected: false,
-                color: colorRamp2(3),
+                color: colorRamp(3),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -123,7 +121,7 @@ define([
                 name: 'Live Users, able to login',
                 fullName: 'User status breakdown;Live Users, able to login',
                 selected: false,
-                color: colorRamp2(4),
+                color: colorRamp(4),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -132,7 +130,7 @@ define([
                 name: 'Users locked out, unable to login',
                 fullName: 'User status breakdown;Users locked out, unable to login',
                 selected: false,
-                color: colorRamp2(5),
+                color: colorRamp(5),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -141,7 +139,7 @@ define([
                 name: 'Obsolete users',
                 fullName: 'User status breakdown;Obsolete users',
                 selected: false,
-                color: colorRamp2(6),
+                color: colorRamp(6),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -150,7 +148,7 @@ define([
                 name: 'Suspended users',
                 fullName: 'User status breakdown;Suspended users',
                 selected: false,
-                color: colorRamp2(7),
+                color: colorRamp(7),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -159,7 +157,7 @@ define([
                 name: 'Awaiting Physical Evidence users',
                 fullName: 'User status breakdown;Awaiting Physical Evidence users',
                 selected: false,
-                color: colorRamp(7),
+                color: colorRamp(8),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -168,7 +166,7 @@ define([
                 name: 'Users who have consented to email marketing',
                 fullName: 'User status breakdown;Users who have consented to email marketing',
                 selected: false,
-                color: colorRamp(6),
+                color: colorRamp(9),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -177,7 +175,7 @@ define([
                 name: 'New unapproved users',
                 fullName: 'User status breakdown;New unapproved users',
                 selected: false,
-                color: colorRamp(5),
+                color: colorRamp(10),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -186,7 +184,7 @@ define([
                 name: 'Users that have never logged in',
                 fullName: 'User status breakdown;Inactive Users - Users that have never logged in',
                 selected: false,
-                color: colorRamp(4),
+                color: colorRamp(11),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -195,7 +193,7 @@ define([
                 name: 'Logged in more than 3 months ago',
                 fullName: 'User status breakdown;Dormant Users - Logged in more than 3 months ago',
                 selected: false,
-                color: colorRamp(3),
+                color: colorRamp(12),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -204,7 +202,7 @@ define([
                 name: 'Logged in in the last 3 months',
                 fullName: 'User status breakdown;Active Users - Logged in in the last 3 months',
                 selected: false,
-                color: colorRamp(2),
+                color: colorRamp(13),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -213,7 +211,7 @@ define([
                 name: 'Users who logged in in the last month',
                 fullName: 'User status breakdown;Users who logged in in the last month',
                 selected: true,
-                color: colorRamp(1),
+                color: colorRamp(14),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -222,7 +220,7 @@ define([
                 name: 'Personal users who logged in in the last month',
                 fullName: 'User status breakdown;Personal users who logged in in the last month',
                 selected: false,
-                color: colorRamp(0),
+                color: colorRamp(15),
                 textColor: '#525252',
                 opacity: selectionOpacity,
                 type: 'line' // area or line
@@ -326,7 +324,7 @@ define([
     stackedArea.margin(margin);
     stackedArea.height(600);
     stackedArea.width(800);
-    stackedArea.lineOpacity(0.8);
+    stackedArea.lineOpacity(0.9);
 
     var stackedAreaContext = d3.ninja.stackedAreaWithSecondaryAxisLines();
     stackedAreaContext.yMin(0);

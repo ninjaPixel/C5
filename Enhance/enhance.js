@@ -14,15 +14,15 @@ require.config({
         'XDate': '../../js/XDate',
         'jqueryUI': '../../js/jquery-ui-1.11.1/jquery-ui.min',
         'dimple':'js/dimple.v2.1.0.min',
-        'ninjaCharts.v0.1.2': 'js/ninjaCharts.v0.1.2',
+        'enhanceCharts': 'js/enhanceCharts',
         'enhanceData':'js/enhanceData'
     }
 });
 
 define([
     // Load our app module and pass it to our definition function
-    'd3', 'ninjaCharts.v0.1.2', 'enhanceData'
-], function (d3, ninjaCharts,enhanceData) {
+    'd3', 'enhanceCharts', 'enhanceData'
+], function (d3, enhanceCharts,enhanceData) {
 
     var bubbleChart = d3.ninja.bubbleChart();
     //bubbleChart.bubbleSpill(true);

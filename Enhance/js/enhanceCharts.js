@@ -1,3 +1,5 @@
+// Version 0.1.3
+// added grid lines to bubble plot
 // Version 0.1.2
 // added require.js and new charts - horizontalLegendSelectable and stackedAreaWithSecondaryAxisLines
 // Version 0.1.1
@@ -1256,7 +1258,14 @@ define([
                     return d.r;
                 });
 
-
+                // save the actual min and max values before they get recalculated by the 'no spill' algorithm
+                // i need these values when drawing the grid lines becasue in cases where the original min x
+                // is near 0, then the no spill algorithm may set minX to be a negative number
+                // and it doesn't quite look right to have the grid lines flowing over the y-axis
+                var minXOriginal = minX,
+                    maxXOriginal = maxX,
+                    minYOriginal = minY,
+                    maxYOriginal = maxY;
 
                 // sort the bubbles by the radius, as we want to plot the smallest
                 // bubble last so that they are not covered by larger bubbles
@@ -1409,8 +1418,8 @@ define([
 
                     horizontalLines.transition().ease(ease)
                         .attr({
-                            "x1": xScale(xScale.domain()[0]),
-                            "x2": xScale(xScale.domain()[1]),
+                            "x1": xScale(Math.floor(minXOriginal)),
+                            "x2": xScale(maxXOriginal),
                             "y1": function (d) {
                                 return yScale(d);
                             },
@@ -1434,7 +1443,7 @@ define([
                                 return xScale(d);
                             },
                             "y1": 0,
-                            "y2": chartHeight
+                            "y2": yScale(Math.floor(minYOriginal))
                         });
 
                 }
