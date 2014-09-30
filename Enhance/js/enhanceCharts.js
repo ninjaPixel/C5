@@ -787,7 +787,7 @@ define([
                             thisDate = thisMoment.format("Do MMM 'YY");
                         return thisDate + '<br/>' + d.name + ': ' + d.y;
                     });
-
+                //yyy
 
                 // Trick to just append the svg skeleton once
                 if (!svg) {
@@ -1359,6 +1359,14 @@ define([
                         updateXYScalesBasedOnBubbleEdges();
                     }
                 }
+
+                var tip = d3.tip()
+                    .attr('class', 'd3-tip')
+                    .offset([-10, 0])
+                    .html(function (d) {
+                        return '<div class="innerTooltip"><h4>' + d.name + '</h4><br/> Return <b>' + d.annualisedPerformance.toFixed(1) + '%</b><br/>Risk <b>' + d.risk.toFixed(1) + '%</b><br/>Max Drawdown <b>' + d.maxDrawdown.toFixed(1)+'%</b></div>';
+                    });
+
                 // axis of evil
                 var xAxis = d3.svg.axis()
                     .scale(xScale)
@@ -1367,7 +1375,7 @@ define([
                 var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient('left');
-
+                // xxx
                 // Trick to just append the svg skeleton once
                 if (!svg) {
                     svg = d3.select(this)
@@ -1382,6 +1390,7 @@ define([
                     container.append("g").classed("chartTitle", true);
                     container.append("g").classed("yTitle", true);
                     container.append("g").classed("xTitle", true);
+                    //                    container.append("g").classed("area-tooltip", true);
                 }
                 svg.transition().attr({
                     width: width,
@@ -1449,7 +1458,7 @@ define([
                 }
                 // Enter, Update, Exit on bubbles
                 var rScale0 = rScale(0);
-                var bubbles = svg.select('.chart-group').selectAll('.bubble')
+                var bubbles = svg.select('.chart-group').call(tip).selectAll('.bubble')
                     .data(_data);
                 bubbles.enter().append('circle')
                     .classed('bubble', true)
@@ -1462,6 +1471,7 @@ define([
                                 opacity: mouseOverOpacity,
                                 stroke: 'black'
                             });
+                        tip.show(d);
                         dispatch.mouseover(d);
                     })
                     .on('mouseout', function () {
@@ -1470,6 +1480,7 @@ define([
                                 opacity: bubbleOpacity, // Re-sets the opacity of the circle
                                 stroke: strokeColour
                             });
+                        tip.hide();
                         dispatch.mouseout([]);
                     })
                     .on('click', function () {
