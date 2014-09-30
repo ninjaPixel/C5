@@ -1229,6 +1229,7 @@ define([
             yMaxUserDefined,
             yMinUserDefined,
             showGridLines = false,
+            lineOpacity = 0.7,
             allowBubblesToSpillOffChart = false;
 
         var dispatch = d3.dispatch('mouseover', 'mouseout', 'click');
@@ -1246,7 +1247,7 @@ define([
                     return d.x;
                 });
                 minY = d3.min(_data, function (d) {
-                    return d.y;
+                    return d.maxDrawdown;
                 });
                 maxY = d3.max(_data, function (d) {
                     return d.y;
@@ -1353,7 +1354,7 @@ define([
                             .domain([minY, maxY])
                             .range([chartHeight, 0]);
                     };
-
+                    console.log('minY', minY);
                     // TODO: break if delta is small, rather than a specific number of interations
                     for (var scaleCount = 0; scaleCount < 10; scaleCount++) {
                         updateXYScalesBasedOnBubbleEdges();
@@ -1364,17 +1365,23 @@ define([
                     .attr('class', 'd3-tip')
                     .offset([-10, 0])
                     .html(function (d) {
-                        return '<div class="innerTooltip"><h4>' + d.name + '</h4><br/> Return <b>' + d.annualisedPerformance.toFixed(1) + '%</b><br/>Risk <b>' + d.risk.toFixed(1) + '%</b><br/>Max Drawdown <b>' + d.maxDrawdown.toFixed(1)+'%</b></div>';
+                        return '<div class="innerTooltip"><h4>' + d.name + '</h4><br/> Return <b>' + d.annualisedPerformance.toFixed(1) + '%</b><br/>Risk <b>' + d.risk.toFixed(1) + '%</b><br/>Max Drawdown <b>' + d.maxDrawdown.toFixed(1) + '%</b></div>';
                     });
 
                 // axis of evil
                 var xAxis = d3.svg.axis()
                     .scale(xScale)
-                    .orient('bottom');
+                    .orient('bottom')
+                    .tickFormat(function (d) {
+                        return d + "%";
+                    });
 
                 var yAxis = d3.svg.axis()
                     .scale(yScale)
-                    .orient('left');
+                    .orient('left')
+                    .tickFormat(function (d) {
+                        return d + "%";
+                    });
                 // xxx
                 // Trick to just append the svg skeleton once
                 if (!svg) {
@@ -1390,7 +1397,6 @@ define([
                     container.append("g").classed("chartTitle", true);
                     container.append("g").classed("yTitle", true);
                     container.append("g").classed("xTitle", true);
-                    //                    container.append("g").classed("area-tooltip", true);
                 }
                 svg.transition().attr({
                     width: width,
@@ -1452,14 +1458,16 @@ define([
                                 return xScale(d);
                             },
                             "y1": 0,
-                            "y2": yScale(Math.floor(minYOriginal))
+                            "y2": yScale(Math.floor(minY))
                         });
 
                 }
                 // Enter, Update, Exit on bubbles
                 var rScale0 = rScale(0);
                 var bubbles = svg.select('.chart-group').call(tip).selectAll('.bubble')
-                    .data(_data);
+                    .data(_data, function (d) {
+                        return d.name + d.date;
+                    });
                 bubbles.enter().append('circle')
                     .classed('bubble', true)
                     .attr({
@@ -1477,7 +1485,7 @@ define([
                     .on('mouseout', function () {
                         d3.select(this)
                             .style({
-                                opacity: bubbleOpacity, // Re-sets the opacity of the circle
+                                opacity: function(d){ return d.opacity;}, // Re-sets the opacity of the circle
                                 stroke: strokeColour
                             });
                         tip.hide();
@@ -1494,7 +1502,7 @@ define([
                         fill: function (d) {
                             return d.color;
                         },
-                        opacity: bubbleOpacity,
+                        opacity: function(d) { return d.opacity;},
                         stroke: strokeColour // may want to leave this to the CSS so that the dev can set it to be the same as the BG color of the chart
                     })
                     .attr({
@@ -1512,6 +1520,104 @@ define([
                 bubbles.exit().transition().style({
                     opacity: 0
                 }).remove();
+
+                function plotRisk() {
+                    // draw line xxx
+                    var verticalLine = d3.svg.line()
+                        .x(function (d) {
+                            return xScale(d.x);
+                        })
+                        .y(function (d) {
+                            return yScale(d.maxDrawdown);
+                        });
+
+                    var vertLineSvg = svg.select('.chart-group').selectAll('path.line')
+                        .data(_data, function (d) {
+                            return d.name + d.date;
+                        });
+
+                    vertLineSvg.enter()
+                        .append('svg:path')
+                        .attr('class', 'line')
+                        .style('opacity', 0)
+                        .style('stroke-width', '5.0px');
+
+                    vertLineSvg.exit()
+                        .transition()
+                        .duration(transitionDuration)
+                        .ease(ease)
+                        .style('opacity', function(d){return d.opacity;})
+                        .remove();
+
+                    vertLineSvg.transition()
+                        .delay(function (d, i) {
+                            return i * 100;
+                        }) // stagger the transition so that it is easier to follow
+                    .duration(transitionDuration)
+                        .ease(ease)
+                        .attr('d', function (d) {
+                            var values = [{
+                                x: d.x,
+                                maxDrawdown: 0
+                            }, {
+                                x: d.x,
+                                maxDrawdown: d.maxDrawdown
+                            }];
+                            return verticalLine(values);
+                        })
+                        .style('stroke', function (d) {
+                            return d.color;
+                        })
+                        .style('opacity', lineOpacity);
+
+                    var horizontalLine = d3.svg.line()
+                        .x(function (d) {
+                            return xScale(d.x);
+                        })
+                        .y(function (d) {
+                            return yScale(d.maxDrawdown);
+                        });
+
+                    var horzLineSvg = svg.select('.chart-group').selectAll('path.hLine')
+                        .data(_data, function (d) {
+                            return d.name + d.date;
+                        });
+
+                    horzLineSvg.enter()
+                        .append('svg:path')
+                        .attr('class', 'hLine')
+                        .style('opacity', 0)
+                        .style('stroke-width', '1.0px');
+
+                    horzLineSvg.exit()
+                        .transition()
+                        .duration(transitionDuration)
+                        .ease(ease)
+                        .style('opacity', function(d){return d.opacity;})
+                        .remove();
+
+                    horzLineSvg.transition()
+                        .delay(function (d, i) {
+                            return i * 100;
+                        }) // stagger the transition so that it is easier to follow
+                    .duration(transitionDuration)
+                        .ease(ease)
+                        .attr('d', function (d) {
+                            var values = [{
+                                x: d.x - xScale.invert(d.r),
+                                maxDrawdown: d.maxDrawdown
+                            }, {
+                                x: d.x +xScale.invert(d.r),
+                                maxDrawdown: d.maxDrawdown
+                            }];
+                            return horizontalLine(values);
+                        })
+                        .style('stroke', function (d) {
+                            return d.color;
+                        })
+                        .style('opacity', lineOpacity);
+                }
+                plotRisk();
 
                 if (border) {
                     var smallArray = [1];
@@ -1548,24 +1654,29 @@ define([
                     var yTitleSvg = svg.select(".yTitle").selectAll("text.yTitle").data(arr);
                     yTitleSvg.enter().append("text")
                         .attr("class", "yTitle")
-                        .attr('transform', 'rotate(-90)')
-                        .style('text-anchor', 'middle');
+                        .style('text-anchor', 'middle')
+                        .attr('transform', 'rotate(-90)');
+
                     // exit
                     yTitleSvg.exit().transition().duration(200).remove();
+
                     // transition
                     yTitleSvg.transition()
                         .duration(transitionDuration)
                         .text(yAxis1Title)
-                        .attr('x', -yScale((maxY - minY) / 2))
+                        .attr('x', -chartHeight / 2)
                         .attr('y', -(margin.left * 0.7));
+                    console.log('maxY', maxY, 'minY', minY);
 
                     // x title
                     var xTitleSvg = svg.select(".xTitle").selectAll("text.xTitle").data(arr);
                     xTitleSvg.enter().append("text")
                         .attr("class", "xTitle")
                         .style('text-anchor', 'middle');
+
                     // exit
                     xTitleSvg.exit().transition().duration(200).remove();
+
                     // transition
                     xTitleSvg.transition()
                         .duration(transitionDuration)
@@ -1685,6 +1796,12 @@ define([
             showGridLines = _x;
             return this;
         };
+        exports.lineOpacity = function (_x) {
+            if (!arguments.length) return lineOpacity;
+            lineOpacity = _x;
+            return this;
+        };
+
         d3.rebind(exports, dispatch, 'on');
         return exports;
     };
@@ -1775,7 +1892,7 @@ define([
 
                 var legendRect = legendSvg.selectAll('rect.legend')
                     .data(_data, function (d) {
-                        return d.name + d.selected;
+                        return d.name;
                     });
                 // enter
                 legendRect.enter().append('rect')
@@ -1942,25 +2059,60 @@ define([
                 // draw the legend
                 var legendSvg = svg.select('.legend');
 
-                var legendRect = legendSvg.selectAll('path.legend')
-                    .data(_data);
+                var legendRect = legendSvg.selectAll('rect.legend')
+                    .data(_data, function (d) {
+                        return d.name;
+                    });
                 // enter
-                legendRect.enter().append('path')
+                legendRect.enter().append('rect')
                     .attr('class', 'legend')
-                    .on('click', dispatch.customClick)
-                    .style('opacity', backgroundOpacity)
-                    .style('stroke-width', '0px');
+                    .style('opacity', function (d) {
+                        return d.opacity
+                    })
+                    .on('click', dispatch.click)
+                    .on('mouseover', function (d) {
+                        d3.select(this)
+                            .style({
+                                opacity: hoverOpacity,
+                                stroke: '#525252'
+                            });
+                    })
+                    .on('mouseout', function (d) {
+                        d3.select(this)
+                            .style({
+                                opacity: d.opacity, // Re-sets the opacity of the legend item
+                                stroke: 'white'
+                            });
+                    })
                 // exit
                 legendRect.exit().transition().duration(200).attr('width', 0).remove();
                 // transition
                 legendRect.transition()
                     .duration(transitionDuration)
-                    .attr('d', function (d, i) {
-                        return ninjaRect(xPosition(i), yPosition(i), (itemWidth * widthMultiplier), (itemHeight * widthMultiplier), 5);
+                    .attr('x', function (d, i) {
+                        return xPosition(i);
                     })
+                    .attr('y', function (d, i) {
+                        return yPosition(i);
+                    })
+                    .attr('height', itemHeight * widthMultiplier)
+                    .attr('width', function (d) {
+                        if (d.selected) {
+                            return itemWidth * widthMultiplier;
+                        } else {
+                            return itemWidth * widthMultiplier * 0.95;
+                        }
+                    })
+                    .attr('ry', 2)
+                    .attr('rx', 2)
                     .style('fill', function (d) {
-                        return d.colour;
+                        return d.color;
                     });
+
+
+
+
+
 
                 var legendText = legendSvg.selectAll('text.legend')
                     .data(_data);
