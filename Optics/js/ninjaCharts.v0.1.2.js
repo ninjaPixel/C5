@@ -14,11 +14,11 @@ require.config({
         }
     },
     paths: {
-        'moment': 'js/moment.v2.8.1.min',
-        'moment-timezone': 'js/moment-timezone.v0.2.1.min',
-        'moment-timezone-data': 'js/moment-timezone-with-data-2010-2020',
-        'd3': 'js/d3.v3.4.11.min',
-        'd3-tip': 'js/d3-tip'
+        'moment': '3rdPartyFiles/moment.v2.8.1.min',
+        'moment-timezone': '3rdPartyFiles/moment-timezone.v0.2.1.min',
+        'moment-timezone-data': '3rdPartyFiles/moment-timezone-with-data-2010-2020',
+        'd3': '3rdPartyFiles/d3.v3.4.11.min',
+        'd3-tip': '3rdPartyFiles/d3-tip'
     }
 });
 
@@ -653,6 +653,7 @@ define([
             tooltipBubbles,
             tooltipBubblesSvg,
             areaStroke = 'white',
+            toolTipHoverRadius = 4,
             type = {
                 area: 'area',
                 line: 'line'
@@ -750,8 +751,7 @@ define([
                 if (typeof yMaxUserDefined !== 'undefined') {
                     maxY = yMaxUserDefined;
                 }
-                console.log('MinDate:', minDate, ', MinY:', minY, ', MinY2:', minY2);
-                console.log('MaxDate:', maxDate, ', MaxY:', maxY, ', MaxY2:', maxY2);
+
                 // create the sclaing functions
                 var xScale = d3.time.scale()
                     .range([0, chartWidth]);
@@ -1042,7 +1042,7 @@ define([
                     tooltipBubblesSvg.enter().append('circle')
                         .classed('bubble', true)
                         .attr({
-                            r: 4
+                            r: toolTipHoverRadius
                         })
                         .style({
                             opacity: 0,
@@ -1195,6 +1195,11 @@ define([
         exports.areaStroke = function (_x) {
             if (!arguments.length) return areaStroke;
             areaStroke = _x;
+            return this;
+        };        
+        exports.toolTipHoverRadius = function (_x) {
+            if (!arguments.length) return toolTipHoverRadius;
+            toolTipHoverRadius = _x;
             return this;
         };
 

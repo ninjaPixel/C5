@@ -26,7 +26,7 @@ define([
     // Load our app module and pass it to our definition function
     'd3', 'moment', 'd3-tip'
 ], function (d3, moment) {
-    console.log('ninjaCharts loaded. Using d3 version', d3.version);
+    console.log('ninjaCharts 0.1.2 loaded. Using d3 version', d3.version);
 
     // setup our charts in the d3.ninja namespace
     d3.ninja = {};
@@ -653,6 +653,7 @@ define([
             tooltipBubbles,
             tooltipBubblesSvg,
             areaStroke = 'white',
+            toolTipHoverRadius = 4,
             type = {
                 area: 'area',
                 line: 'line'
@@ -750,8 +751,7 @@ define([
                 if (typeof yMaxUserDefined !== 'undefined') {
                     maxY = yMaxUserDefined;
                 }
-                console.log('MinDate:', minDate, ', MinY:', minY, ', MinY2:', minY2);
-                console.log('MaxDate:', maxDate, ', MaxY:', maxY, ', MaxY2:', maxY2);
+
                 // create the sclaing functions
                 var xScale = d3.time.scale()
                     .range([0, chartWidth]);
@@ -1042,7 +1042,7 @@ define([
                     tooltipBubblesSvg.enter().append('circle')
                         .classed('bubble', true)
                         .attr({
-                            r: 4
+                            r: toolTipHoverRadius
                         })
                         .style({
                             opacity: 0,
@@ -1195,6 +1195,11 @@ define([
         exports.areaStroke = function (_x) {
             if (!arguments.length) return areaStroke;
             areaStroke = _x;
+            return this;
+        };        
+        exports.toolTipHoverRadius = function (_x) {
+            if (!arguments.length) return toolTipHoverRadius;
+            toolTipHoverRadius = _x;
             return this;
         };
 
