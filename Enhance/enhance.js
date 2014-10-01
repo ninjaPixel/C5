@@ -33,12 +33,12 @@ define([
     };
 
     bubbleChart.height(400)
-        .width(600)
+        .width(700)
         .border(false)
         .maxBubbleRadius(25)
-        .yAxis1Title('Performance (previous 36 months)')
+        .yAxis1Title('Performance')
         .xAxisTitle('Risk')
-        .title('Annualised Performance and Drawdown vs. Risk')
+        .title('Index Performance vs. Risk')
         .strokeColour('#525252')
         .bubbleSpill(false)
         .yMin(-14)
@@ -156,7 +156,7 @@ define([
 
         text2.attr('x', 48)
             .attr('y', 98)
-            .text('Max. drawdown over previous 36 months');
+            .text('Max. Drawdown over previous 36 months');
 
 
 

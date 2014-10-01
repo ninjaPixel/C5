@@ -1354,7 +1354,6 @@ define([
                             .domain([minY, maxY])
                             .range([chartHeight, 0]);
                     };
-                    console.log('minY', minY);
                     // TODO: break if delta is small, rather than a specific number of interations
                     for (var scaleCount = 0; scaleCount < 10; scaleCount++) {
                         updateXYScalesBasedOnBubbleEdges();
@@ -1363,7 +1362,8 @@ define([
 
                 var tip = d3.tip()
                     .attr('class', 'd3-tip')
-                    .offset([-10, 0])
+                    .offset([0, 10])
+                    .direction('e')
                     .html(function (d) {
                         return '<div class="innerTooltip"><h4>' + d.name + '</h4><br/> Return <b>' + d.annualisedPerformance.toFixed(1) + '%</b><br/>Risk <b>' + d.risk.toFixed(1) + '%</b><br/>Max Drawdown <b>' + d.maxDrawdown.toFixed(1) + '%</b></div>';
                     });

@@ -16,7 +16,7 @@ h6 {
 .d3-tip {
     line-height: 1;
     padding: 8px;
-    background: rgba(200, 200, 200, 1.0);
+    background: rgba(200, 200, 200, 0.9);
     color: #333;
     border-radius: 2px;
     font-family:  serif;
@@ -53,9 +53,16 @@ h6 {
     shape-rendering: crispEdges;
 }
 text {
-    font: 14px Lora;
-/*    position: absolute;*/
+    font: 12px Lora;
 }
+text.chartTitle {
+    font: 22px Lora;
+}
+text.yTitle,
+text.xTitle {
+    font: 20px Lora;
+}
+
 
 
 
