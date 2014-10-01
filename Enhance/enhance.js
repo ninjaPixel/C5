@@ -24,7 +24,7 @@ define([
     'd3', 'enhanceCharts', 'enhanceData'
 ], function (d3, enhanceCharts, enhanceData) {
 
-    var bubbleChart = d3.ninja.bubbleChart();
+    var bubbleChart = d3.enhance.riskAndPerformanceChart();
     var margin = {
         top: 20,
         bottom: 40,
@@ -45,7 +45,7 @@ define([
         .showGridLines(true)
         .margin(margin);
 
-    var legend = d3.ninja.horizontalLegendSelectable();
+    var legend = d3.enhance.horizontalLegendSelectable();
     var legendMargin = {
         top: 20,
         bottom: 40,
