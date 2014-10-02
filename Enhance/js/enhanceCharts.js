@@ -290,7 +290,6 @@ define([
                 }
 
                 if (showGridLines) {
-                    console.log('xscale domain', xScale.domain());
                     var horizontalLines = svg.select('.horizontalGrid').selectAll('hLines').data(yScale.ticks());
 
                     horizontalLines.enter()
@@ -540,7 +539,6 @@ define([
                         .text(yAxis1Title)
                         .attr('x', -chartHeight / 2)
                         .attr('y', -(margin.left * 0.7));
-                    console.log('maxY', maxY, 'minY', minY);
 
                     // x title
                     var xTitleSvg = svg.select(".xTitle").selectAll("text.xTitle").data(arr);

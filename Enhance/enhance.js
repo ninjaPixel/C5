@@ -29,7 +29,7 @@ define([
     var margin = {
         top: 35,
         bottom: 80,
-        left: 60,
+        left: 50,
         right: 20
     };
 
@@ -66,21 +66,19 @@ define([
     myHistogram.margin(margin)
         .yAxis1Title('Proportion of Portfolios')
         .xAxisTitle('Performance')
-    //            .bins(d3.scale.linear().ticks(30))
-    .bins(20)
-        .plotFrequency(false)
+        .bins(20)
+        .tickValues([-8, -6, -4, -2, 0, 2, 4, 6, 8]) // need to automate
+    .plotFrequency(false)
         .yMax(0.45)
         .height(300)
-        .width(commonChartWidth);
-
-    myHistogram.tickFormat(function (d) {
-        return d + '%';
-    })
+        .width(commonChartWidth)
+        .tickFormat(function (d) {
+            return d + '%';
+        })
         .range([-10, 10])
-
-    myHistogram.yAxisTickFormat(function (d) {
-        return Math.round(d * 100, 0) + '%';
-    });
+        .yAxisTickFormat(function (d) {
+            return Math.round(d * 100, 0) + '%';
+        });
 
 
     var bubbleChartData = getEnhanceDataXY();
@@ -150,16 +148,6 @@ define([
                 stroke: strokeColor
             });
 
-        //        var text1 = svgContainer.selectAll('text1')
-        //            .data([0])
-        //            .enter()
-        //            .append('text').classed('text1', true);
-        //
-        //        text1.attr('x', 48)
-        //            .attr('y', 29)
-        //            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
-        //            .text('Annualised Performance over previous 36 months');
-
         var arr = ['Annualised Performance', 'over previous 36 months'];
         var text3 = svgContainer.selectAll('text3')
             .data(arr)
@@ -205,17 +193,7 @@ define([
                 'stroke-width': 1
             });
 
-//        var text2 = svgContainer.selectAll('text2')
-//            .data([0])
-//            .enter()
-//            .append('text').classed('text2', true);
-//
-//        text2.attr('x', 48)
-//            .attr('y', 98)
-//            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
-//            .text('Max. Drawdown over previous 36 months');
-
-         arr = ['Maximum Drawdown', 'over previous 36 months'];
+        arr = ['Maximum Drawdown', 'over previous 36 months'];
         var text4 = svgContainer.selectAll('text4')
             .data(arr)
             .enter()

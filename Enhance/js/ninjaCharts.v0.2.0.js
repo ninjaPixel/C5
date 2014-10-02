@@ -197,14 +197,13 @@ define([
                 // Update the x-axis.
                 g.select('.x.axis')
                     .attr('transform', 'translate(0,' + y.range()[0] + ')')
-                    .call(xAxis);
+                    .call(xAxis);                
 
                 // Update the y-axis.
                 g.select('.y.axis')
-                //                    .attr('transform', 'translate('+x.range()[0] + x(0) +', 0)')
+//                .attr('transform', 'translate(' + x(d3.min(data, function(d){return d.x;})) + ', 0)')
                 .attr('transform', 'translate(' + x(0) + ', 0)')
                     .call(yAxis);
-                console.log('x.range()', x.range()[5]);
 
                 function plotLabels() {
                     // title
@@ -325,7 +324,7 @@ define([
         d3.rebind(chart, histogramFunction, 'value', 'range', 'bins');
 
         // Expose the x-axis' tickFormat method.
-        d3.rebind(chart, xAxis, 'tickFormat');
+        d3.rebind(chart, xAxis, 'tickFormat', 'ticks', 'tickValues');
 
         //        // Expose the y-axis' tickFormat method.
         //        d3.rebind(chart, yAxis, 'tickFormat');
@@ -1667,7 +1666,6 @@ define([
                 }
 
                 if (showGridLines) {
-                    console.log('xscale domain', xScale.domain());
                     var horizontalLines = svg.select('.horizontalGrid').selectAll('hLines').data(yScale.ticks());
 
                     horizontalLines.enter()
