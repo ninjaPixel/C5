@@ -686,7 +686,7 @@ define([
             textOpacity = 1,
             widthMultiplier = 0.95;
 
-        var dispatch = d3.dispatch('click');
+        var dispatch = d3.dispatch('click', 'mouseover');
 
         function exports(_selection) {
             _selection.each(function (_data) {
@@ -773,6 +773,7 @@ define([
                                 opacity: hoverOpacity,
                                 stroke: '#525252'
                             });
+                    
                     })
                     .on('mouseout', function (d) {
                         d3.select(this)

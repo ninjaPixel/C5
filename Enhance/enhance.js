@@ -22,8 +22,8 @@ require.config({
 
 define([
     // Load our app module and pass it to our definition function
-    'd3', 'enhanceCharts', 'enhanceData', 'ninjaCharts.v0.2.0'
-], function (d3, enhanceCharts, enhanceData, ninjaCharts) {
+    'd3', 'enhanceCharts', 'ninjaCharts.v0.2.0', 'enhanceData'
+], function (d3, enhanceCharts, ninjaCharts,enhanceData) {
 
     var bubbleChart = d3.enhance.riskAndPerformanceChart();
     var margin = {
@@ -69,7 +69,7 @@ console.log('mouseover:',d);
     .xAxisTitle('Annualised Return')
         .tickFormat(d3.format(".01f"))
         .range([-10, 10])
-    //        .bins(d3.scale.linear().ticks(20))
+//            .bins(d3.scale.linear().ticks(30))
     .bins(20)
         .plotFrequency(false)
     //    .xMax(6).xMin(-6)

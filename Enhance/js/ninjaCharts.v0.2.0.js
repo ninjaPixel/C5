@@ -18,11 +18,11 @@ require.config({
         }
     },
     paths: {
-        'moment': '3rdPartyFiles/moment.v2.8.1.min',
-        'moment-timezone': '3rdPartyFiles/moment-timezone.v0.2.1.min',
-        'moment-timezone-data': '3rdPartyFiles/moment-timezone-with-data-2010-2020',
-        'd3': '3rdPartyFiles/d3.v3.4.11.min',
-        'd3-tip': '3rdPartyFiles/d3-tip'
+        'moment': 'js/moment.v2.8.1.min',
+        'moment-timezone': 'js/moment-timezone.v0.2.1.min',
+        'moment-timezone-data': 'js/moment-timezone-with-data-2010-2020',
+        'd3': 'js/d3.v3.4.11.min',
+        'd3-tip': 'js/d3-tip'
     }
 });
 
@@ -252,12 +252,12 @@ define([
 
                 // Update the y-axis.
                 g.select('.y.axis')
-//                    .attr('transform', 'translate('+x.range()[0] + x(0) +', 0)')
-                .attr('transform', 'translate('+ x(0) +', 0)')
+                //                    .attr('transform', 'translate('+x.range()[0] + x(0) +', 0)')
+                .attr('transform', 'translate(' + x(0) + ', 0)')
                     .call(yAxis);
-                console.log('x.range()',x.range()[5]);
-                
-               function plotLabels() {
+                console.log('x.range()', x.range()[5]);
+
+                function plotLabels() {
                     // title
                     var arr = new Array();
                     arr.push(1);
@@ -303,7 +303,7 @@ define([
                         .attr('y', chartHeight + 45)
                         .attr('x', chartWidth / 2);
 
-                } 
+                }
                 plotLabels();
             });
         }
