@@ -46,6 +46,12 @@ define([
         .showGridLines(true)
         .margin(margin);
 
+    bubbleChart.on('mouseover', function (d) {
+console.log('mouseover:',d);
+        drawHistogram(d.individualReturns);
+
+    });
+
     var legend = d3.enhance.horizontalLegendSelectable();
     var legendMargin = {
         top: 20,
@@ -59,17 +65,17 @@ define([
     var myHistogram = d3.ninja.histogram();
     myHistogram.margin(margin)
         .tickFormat(d3.format(".01f"))
-    .range([-10,10])
-//        .bins(d3.scale.linear().ticks(20))
+        .range([-10, 10])
+    //        .bins(d3.scale.linear().ticks(20))
     .bins(20)
         .plotFrequency(false)
-//    .xMax(6).xMin(-6)
-        .height(300)
+    //    .xMax(6).xMin(-6)
+    .height(300)
         .width(700);
 
     //        
 
-    
+
 
     var bubbleChartData = getEnhanceDataXY();
     console.log('enhance data', bubbleChartData);

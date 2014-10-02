@@ -15,7 +15,7 @@ var getEnhanceData = function () {
             'annualisedPerformance': 3.00,
             'risk': 4.00,
             'maxDrawdown': -3.00,
-            'distributionFunction' : d3.random.normal(2.5, 2)
+            'distributionFunction' : d3.random.normal(1, 0.9)
   },
         {
             'date': '2014-03-31',
@@ -23,7 +23,7 @@ var getEnhanceData = function () {
             'annualisedPerformance': 3.7,
             'risk': 7,
             'maxDrawdown': -7.00,
-            'distributionFunction' : d3.random.normal(3.2, 2.6)
+            'distributionFunction' : d3.random.normal(3, 0.9)
   },
         {
             'date': '2014-03-31',
@@ -31,7 +31,7 @@ var getEnhanceData = function () {
             'annualisedPerformance': 5.70,
             'risk': 10.50,
             'maxDrawdown': -10.50,
-            'distributionFunction' : d3.random.normal(5, 3)
+            'distributionFunction' : d3.random.normal(5, 1.5)
   },
         {
             'date': '2014-03-31',
@@ -39,7 +39,7 @@ var getEnhanceData = function () {
             'annualisedPerformance': 7.60,
             'risk': 14.10,
             'maxDrawdown': -12.00,
-            'distributionFunction' : d3.random.normal(6, 5)
+            'distributionFunction' : d3.random.normal(5, 3)
   }
 ];
     
