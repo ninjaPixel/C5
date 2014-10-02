@@ -39,7 +39,7 @@ var getEnhanceData = function () {
             'annualisedPerformance': 7.60,
             'risk': 14.10,
             'maxDrawdown': -12.00,
-            'distributionFunction' : d3.random.normal(5, 3)
+            'distributionFunction' : d3.random.normal(4, 2.4)
   }
 ];
     
@@ -51,7 +51,7 @@ var getEnhanceData = function () {
     enhanceData.forEach(function(d){
         var individualReturns = [];
     if(typeof d.distributionFunction != 'undefined'){
-        for(var i=0; i<250; i++){
+        for(var i=0; i<5250; i++){
          individualReturns.push(d.distributionFunction());   
         }
     }

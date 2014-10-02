@@ -547,7 +547,7 @@ define([
                     xTitleSvg.transition()
                         .duration(transitionDuration)
                         .text(xAxisTitle)
-                        .attr('y', chartHeight + margin.bottom * 0.9)
+                        .attr('y', chartHeight + margin.bottom * 0.4)
                         .attr('x', chartWidth / 2);
 
                 }

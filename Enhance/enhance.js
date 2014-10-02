@@ -27,8 +27,8 @@ define([
 
     var bubbleChart = d3.enhance.riskAndPerformanceChart();
     var margin = {
-        top: 20,
-        bottom: 40,
+        top: 30,
+        bottom: 80,
         left: 60,
         right: 20
     };
@@ -48,6 +48,7 @@ define([
 
     bubbleChart.on('mouseover', function (d) {
 console.log('mouseover:',d);
+        myHistogram.title('Return Distribution of ' + d.name)
         drawHistogram(d.individualReturns);
 
     });
@@ -64,6 +65,8 @@ console.log('mouseover:',d);
     //histogram
     var myHistogram = d3.ninja.histogram();
     myHistogram.margin(margin)
+    .yAxis1Title('Proportion of Portfolios')
+    .xAxisTitle('Annualised Return')
         .tickFormat(d3.format(".01f"))
         .range([-10, 10])
     //        .bins(d3.scale.linear().ticks(20))
@@ -73,7 +76,7 @@ console.log('mouseover:',d);
     .height(300)
         .width(700);
 
-    //        
+    console.log('histo margin',myHistogram.margin());     
 
 
 

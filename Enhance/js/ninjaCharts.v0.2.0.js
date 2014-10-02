@@ -138,7 +138,7 @@ define([
                     console.log('pad from', -maxAbsX, 'to', maxAbsX);
                     // need to pad out the begining and/or the end of the histogram array
 
-                    console.log('dx', dx);
+                    //console.log('dx', dx);
 
                     if (typeof xMaxUserDefined !== 'undefined' || centreTheChartOnZero) {
                         // pad out the end
@@ -192,6 +192,10 @@ define([
                 gEnter.append('g').attr('class', 'bars');
                 gEnter.append('g').attr('class', 'x axis');
                 gEnter.append('g').attr('class', 'y axis');
+                gEnter.append("g").classed("chartTitle", true);
+                gEnter.append("g").classed("yTitle", true);
+                gEnter.append("g").classed("y2Title", true);
+                gEnter.append("g").classed("xTitle", true);
 
                 // Update the outer dimensions.
                 svg.attr('width', width)
@@ -248,8 +252,59 @@ define([
 
                 // Update the y-axis.
                 g.select('.y.axis')
-                    .attr('transform', 'translate(0,' + 0 + ')')
+//                    .attr('transform', 'translate('+x.range()[0] + x(0) +', 0)')
+                .attr('transform', 'translate('+ x(0) +', 0)')
                     .call(yAxis);
+                console.log('x.range()',x.range()[5]);
+                
+               function plotLabels() {
+                    // title
+                    var arr = new Array();
+                    arr.push(1);
+                    var titleSvg = svg.select(".chartTitle").selectAll("text.chartTitle").data(arr);
+                    titleSvg.enter().append("text")
+                        .attr("class", "chartTitle")
+                        .attr('x', chartWidth / 2)
+                        .attr('y', -(margin.top / 2) + 10);
+                    // exit
+                    titleSvg.exit().transition().duration(200).remove();
+                    // transition
+                    titleSvg.transition()
+                        .duration(transitionDuration)
+                        .text(title)
+                        .style('text-anchor', 'middle');
+
+                    // y title
+                    var yTitleSvg = svg.select(".yTitle").selectAll("text.yTitle").data(arr);
+                    yTitleSvg.enter().append("text")
+                        .attr("class", "yTitle")
+                        .attr('transform', 'rotate(-90)')
+                        .style('text-anchor', 'middle');
+                    // exit
+                    yTitleSvg.exit().transition().duration(200).remove();
+                    // transition
+                    yTitleSvg.transition()
+                        .duration(transitionDuration)
+                        .text(yAxis1Title)
+                        .attr('x', -chartHeight / 2)
+                        .attr('y', -(margin.left * 0.6));
+
+                    // x title
+                    var xTitleSvg = svg.select(".xTitle").selectAll("text.xTitle").data(arr);
+                    xTitleSvg.enter().append("text")
+                        .attr("class", "xTitle")
+                        .style('text-anchor', 'middle');
+                    // exit
+                    xTitleSvg.exit().transition().duration(200).remove();
+                    // transition
+                    xTitleSvg.transition()
+                        .duration(transitionDuration)
+                        .text(xAxisTitle)
+                        .attr('y', chartHeight + 45)
+                        .attr('x', chartWidth / 2);
+
+                } 
+                plotLabels();
             });
         }
 
@@ -289,6 +344,29 @@ define([
             if (!arguments.length) return plotFrequency;
             plotFrequency = _;
             return chart;
+        };
+        chart.title = function (_x) {
+            if (!arguments.length) return title;
+            title = _x;
+            return this;
+        };
+
+        chart.yAxis1Title = function (_x) {
+            if (!arguments.length) return yAxis1Title;
+            yAxis1Title = _x;
+            return this;
+        };
+
+        chart.yAxis2Title = function (_x) {
+            if (!arguments.length) return yAxis2Title;
+            yAxis2Title = _x;
+            return this;
+        };
+
+        chart.xAxisTitle = function (_x) {
+            if (!arguments.length) return xAxisTitle;
+            xAxisTitle = _x;
+            return this;
         };
 
         // Expose the histogram's value, range and bins method.
