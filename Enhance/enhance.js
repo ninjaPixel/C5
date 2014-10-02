@@ -15,14 +15,15 @@ require.config({
         'jqueryUI': '../../js/jquery-ui-1.11.1/jquery-ui.min',
         'dimple': 'js/dimple.v2.1.0.min',
         'enhanceCharts': 'js/enhanceCharts',
-        'enhanceData': 'js/enhanceData'
+        'enhanceData': 'js/enhanceData',
+        'ninjaCharts.v0.2.0': 'js/ninjaCharts.v0.2.0'
     }
 });
 
 define([
     // Load our app module and pass it to our definition function
-    'd3', 'enhanceCharts', 'enhanceData'
-], function (d3, enhanceCharts, enhanceData) {
+    'd3', 'enhanceCharts', 'enhanceData', 'ninjaCharts.v0.2.0'
+], function (d3, enhanceCharts, enhanceData, ninjaCharts) {
 
     var bubbleChart = d3.enhance.riskAndPerformanceChart();
     var margin = {
@@ -54,6 +55,21 @@ define([
     };
     var legendItems = ['Cash Index', 'Low Risk', 'Medium Risk', 'High Risk', 'Equity Benchmark']
 
+    //histogram
+    var myHistogram = d3.ninja.histogram();
+    myHistogram.margin(margin)
+        .tickFormat(d3.format(".01f"))
+    .range([-10,10])
+//        .bins(d3.scale.linear().ticks(20))
+    .bins(20)
+        .plotFrequency(false)
+//    .xMax(6).xMin(-6)
+        .height(300)
+        .width(700);
+
+    //        
+
+    
 
     var bubbleChartData = getEnhanceDataXY();
     console.log('enhance data', bubbleChartData);
@@ -72,11 +88,13 @@ define([
         .call(legend);
 
 
-
+    var drawHistogram = function (histoData) {
+        d3.select("#histogram")
+            .datum(histoData)
+            .call(myHistogram);
+    };
 
     var drawInfoLegend = function () {
-
-
         var svgContainer = d3.select('#infoLegend').append('svg')
             .attr('width', 380)
             .attr('height', 145);
@@ -157,15 +175,8 @@ define([
         text2.attr('x', 48)
             .attr('y', 98)
             .text('Max. Drawdown over previous 36 months');
-
-
-
-
-
-
-
-
     };
 
     drawInfoLegend();
+    drawHistogram(bubbleChartData[2].individualReturns)
 });

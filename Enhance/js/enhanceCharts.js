@@ -28,7 +28,7 @@ define([
     // Load our app module and pass it to our definition function
     'd3', 'moment', 'd3-tip'
 ], function (d3, moment) {
-    console.log('ninjaCharts 0.1.2 loaded. Using d3 version', d3.version);
+    console.log('enhanceCharts loaded. Using d3 version', d3.version);
 
     // setup our charts in the d3.ninja namespace
     d3.enhance = {};
