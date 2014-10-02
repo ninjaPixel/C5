@@ -23,7 +23,7 @@ require.config({
 define([
     // Load our app module and pass it to our definition function
     'd3', 'enhanceCharts', 'ninjaCharts.v0.2.0', 'enhanceData'
-], function (d3, enhanceCharts, ninjaCharts,enhanceData) {
+], function (d3, enhanceCharts, ninjaCharts, enhanceData) {
 
     var bubbleChart = d3.enhance.riskAndPerformanceChart();
     var margin = {
@@ -47,10 +47,8 @@ define([
         .margin(margin);
 
     bubbleChart.on('mouseover', function (d) {
-console.log('mouseover:',d);
         myHistogram.title('Return Distribution of ' + d.name)
         drawHistogram(d.individualReturns);
-
     });
 
     var legend = d3.enhance.horizontalLegendSelectable();
@@ -76,10 +74,6 @@ console.log('mouseover:',d);
     .height(300)
         .width(700);
 
-    console.log('histo margin',myHistogram.margin());     
-
-
-
     var bubbleChartData = getEnhanceDataXY();
     console.log('enhance data', bubbleChartData);
     d3.select('#bubbleChart')
@@ -92,6 +86,13 @@ console.log('mouseover:',d);
         .fontColor('white')
         .fontSize(20)
         .fontColor('#333');
+    
+    legend.on('mouseover', function (d) {
+        console.log(d);
+        myHistogram.title('Return Distribution of ' + d.name)
+        drawHistogram(d.individualReturns);
+    });
+    
     d3.select('#legend')
         .datum(bubbleChartData.slice().reverse())
         .call(legend);
@@ -107,8 +108,6 @@ console.log('mouseover:',d);
         var svgContainer = d3.select('#infoLegend').append('svg')
             .attr('width', 380)
             .attr('height', 145);
-        // http://tributary.io/inlet/cc4700b1fb7c30177fa4
-        //var svgContainer = d3.select("svg");
 
         var jsonCircles = [{
                 'x_axis': 22,

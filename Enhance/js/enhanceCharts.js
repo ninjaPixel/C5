@@ -773,7 +773,7 @@ define([
                                 opacity: hoverOpacity,
                                 stroke: '#525252'
                             });
-                    
+                    dispatch.mouseover(d);
                     })
                     .on('mouseout', function (d) {
                         d3.select(this)
