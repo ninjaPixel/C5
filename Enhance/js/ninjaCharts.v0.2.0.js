@@ -86,12 +86,12 @@ define([
             opacity = 0.7,
             transitionDuration = defaultValues.transitionDuration,
             ease = defaultValues.ease,
-            xMinUserDefined,
-            xMaxUserDefined,
             title = '',
             yAxis1Title = '',
             yAxis2Title = '',
             xAxisTitle = '',
+            yAxisTickFormat,
+            yMaxUserDefined,
             plotFrequency = true; // if false, will plot the probability o the y scale
 
         var histogramFunction = d3.layout.histogram(),
@@ -105,70 +105,14 @@ define([
 
         function chart(selection) {
             selection.each(function (data) {
+                if (typeof yAxisTickFormat != 'undefined') {
+                    yAxis.tickFormat(yAxisTickFormat);
+                }
+                chartWidth = width - margin.left - margin.right,
+                chartHeight = height - margin.bottom - margin.top;
                 // Compute the histogram.
                 histogramFunction.frequency(plotFrequency);
                 data = histogramFunction(data);
-
-                if (centreTheChartOnZero || typeof xMaxUserDefined !== 'undefined' || typeof xMinUserDefined !== 'undefined') {
-
-                    console.log('histo', data);
-                    var minX = d3.min(data, function (d) {
-                            return d.x;
-                        }),
-                        maxX = d3.max(data, function (d) {
-                            return d.x;
-                        });
-
-                    console.log('minX', minX, 'maxX', maxX);
-
-                    if (typeof xMaxUserDefined !== 'undefined') {
-                        maximumX = xMaxUserDefined;
-                    }
-                    if (typeof xMinUserDefined !== 'undefined') {
-                        minimumX = xMinUserDefined;
-                    }
-                    if (centreTheChartOnZero) {
-                        var maxAbsX = maxX;
-                        if (Math.abs(minX) > maxAbsX) {
-                            maxAbsX = Math.abs(minX);
-                        }
-                        maximumX = maxAbsX;
-                        minimumX = -maxAbsX;
-                    }
-                    console.log('pad from', -maxAbsX, 'to', maxAbsX);
-                    // need to pad out the begining and/or the end of the histogram array
-
-                    //console.log('dx', dx);
-
-                    if (typeof xMaxUserDefined !== 'undefined' || centreTheChartOnZero) {
-                        // pad out the end
-                        var dx = data[0].dx;
-                        for (var thisX = maxX + dx; thisX <= maximumX; thisX += dx) {
-                            data.push({
-                                dx: dx,
-                                x: thisX,
-                                y: 0,
-                                length: 0
-                            });
-                        }
-                    }
-                    if (typeof xMinUserDefined !== 'undefined' || centreTheChartOnZero) {
-                        // pad the beginning 
-                        var dx = data[0].dx;
-                        for (var thisX = minX - dx; thisX >= minimumX; thisX -= dx) {
-                            data.push({
-                                dx: dx,
-                                x: thisX,
-                                y: 0,
-                                length: 0
-                            });
-                        }
-                    }
-                    data.sort(function (a, b) {
-                        return a.x - b.x
-                    });
-                    console.log('histo2', data);
-                }
 
                 // Update the x-scale.
                 x.domain(data.map(function (d) {
@@ -179,9 +123,14 @@ define([
 
 
                 // Update the y-scale.
-                y.domain([0, d3.max(data, function (d) {
+                var yMax = d3.max(data, function (d) {
                     return d.y;
-                })])
+                });
+                if (typeof yMaxUserDefined != 'undefined') {
+                    yMax = yMaxUserDefined;
+                }
+
+                y.domain([0, yMax])
                     .range([height - margin.top - margin.bottom, 0]);
 
                 // Select the svg element, if it exists.
@@ -265,7 +214,7 @@ define([
                     titleSvg.enter().append("text")
                         .attr("class", "chartTitle")
                         .attr('x', chartWidth / 2)
-                        .attr('y', -(margin.top / 2) + 10);
+                        .attr('y', -(margin.top / 2) + 0);
                     // exit
                     titleSvg.exit().transition().duration(200).remove();
                     // transition
@@ -281,7 +230,7 @@ define([
                         .attr('transform', 'rotate(-90)')
                         .style('text-anchor', 'middle');
                     // exit
-                    yTitleSvg.exit().transition().duration(200).remove();
+                    yTitleSvg.exit().transition().duration(transitionDuration).remove();
                     // transition
                     yTitleSvg.transition()
                         .duration(transitionDuration)
@@ -300,7 +249,7 @@ define([
                     xTitleSvg.transition()
                         .duration(transitionDuration)
                         .text(xAxisTitle)
-                        .attr('y', chartHeight + 45)
+                        .attr('y', chartHeight + margin.bottom * 0.5)
                         .attr('x', chartWidth / 2);
 
                 }
@@ -330,16 +279,7 @@ define([
             centreTheChartOnZero = _;
             return chart;
         };
-        chart.xMax = function (_) {
-            if (!arguments.length) return xMaxUserDefined;
-            xMaxUserDefined = _;
-            return chart;
-        };
-        chart.xMin = function (_) {
-            if (!arguments.length) return xMinUserDefined;
-            xMinUserDefined = _;
-            return chart;
-        };
+
         chart.plotFrequency = function (_) {
             if (!arguments.length) return plotFrequency;
             plotFrequency = _;
@@ -369,11 +309,26 @@ define([
             return this;
         };
 
+        chart.yAxisTickFormat = function (_x) {
+            if (!arguments.length) return yAxisTickFormat;
+            yAxisTickFormat = _x;
+            return this;
+        };
+
+        chart.yMax = function (_x) {
+            if (!arguments.length) return yMaxUserDefined;
+            yMaxUserDefined = _x;
+            return this;
+        };
+
         // Expose the histogram's value, range and bins method.
         d3.rebind(chart, histogramFunction, 'value', 'range', 'bins');
 
         // Expose the x-axis' tickFormat method.
         d3.rebind(chart, xAxis, 'tickFormat');
+
+        //        // Expose the y-axis' tickFormat method.
+        //        d3.rebind(chart, yAxis, 'tickFormat');
 
         return chart;
     }

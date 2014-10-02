@@ -248,7 +248,7 @@ define([
                     .tickFormat(function (d) {
                         return d + "%";
                     });
-                // xxx
+
                 // Trick to just append the svg skeleton once
                 if (!svg) {
                     svg = d3.select(this)
@@ -351,7 +351,9 @@ define([
                     .on('mouseout', function () {
                         d3.select(this)
                             .style({
-                                opacity: function(d){ return d.opacity;}, // Re-sets the opacity of the circle
+                                opacity: function (d) {
+                                    return d.opacity;
+                                }, // Re-sets the opacity of the circle
                                 stroke: strokeColour
                             });
                         tip.hide();
@@ -368,7 +370,9 @@ define([
                         fill: function (d) {
                             return d.color;
                         },
-                        opacity: function(d) { return d.opacity;},
+                        opacity: function (d) {
+                            return d.opacity;
+                        },
                         stroke: strokeColour // may want to leave this to the CSS so that the dev can set it to be the same as the BG color of the chart
                     })
                     .attr({
@@ -412,7 +416,9 @@ define([
                         .transition()
                         .duration(transitionDuration)
                         .ease(ease)
-                        .style('opacity', function(d){return d.opacity;})
+                        .style('opacity', function (d) {
+                            return d.opacity;
+                        })
                         .remove();
 
                     vertLineSvg.transition()
@@ -459,7 +465,9 @@ define([
                         .transition()
                         .duration(transitionDuration)
                         .ease(ease)
-                        .style('opacity', function(d){return d.opacity;})
+                        .style('opacity', function (d) {
+                            return d.opacity;
+                        })
                         .remove();
 
                     horzLineSvg.transition()
@@ -473,7 +481,7 @@ define([
                                 x: d.x - xScale.invert(d.r),
                                 maxDrawdown: d.maxDrawdown
                             }, {
-                                x: d.x +xScale.invert(d.r),
+                                x: d.x + xScale.invert(d.r),
                                 maxDrawdown: d.maxDrawdown
                             }];
                             return horizontalLine(values);
@@ -773,7 +781,7 @@ define([
                                 opacity: hoverOpacity,
                                 stroke: '#525252'
                             });
-                    dispatch.mouseover(d);
+                        dispatch.mouseover(d);
                     })
                     .on('mouseout', function (d) {
                         d3.select(this)

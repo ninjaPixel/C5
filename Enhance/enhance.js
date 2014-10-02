@@ -27,14 +27,16 @@ define([
 
     var bubbleChart = d3.enhance.riskAndPerformanceChart();
     var margin = {
-        top: 30,
+        top: 35,
         bottom: 80,
         left: 60,
         right: 20
     };
 
+    var commonChartWidth = 550;
+
     bubbleChart.height(400)
-        .width(700)
+        .width(commonChartWidth)
         .border(false)
         .maxBubbleRadius(25)
         .yAxis1Title('Performance')
@@ -47,32 +49,39 @@ define([
         .margin(margin);
 
     bubbleChart.on('mouseover', function (d) {
-        myHistogram.title('Return Distribution of ' + d.name)
-        drawHistogram(d.individualReturns);
+        drawHistogram(d.individualReturns, d.name);
     });
 
     var legend = d3.enhance.horizontalLegendSelectable();
     var legendMargin = {
-        top: 20,
+        top: margin.top,
         bottom: 40,
-        left: 10,
+        left: 20,
         right: 0
     };
-    var legendItems = ['Cash Index', 'Low Risk', 'Medium Risk', 'High Risk', 'Equity Benchmark']
+    //    var legendItems = ['Cash Index', 'Low Risk', 'Medium Risk', 'High Risk', 'Equity Benchmark']
 
     //histogram
     var myHistogram = d3.ninja.histogram();
     myHistogram.margin(margin)
-    .yAxis1Title('Proportion of Portfolios')
-    .xAxisTitle('Annualised Return')
-        .tickFormat(d3.format(".01f"))
-        .range([-10, 10])
-//            .bins(d3.scale.linear().ticks(30))
+        .yAxis1Title('Proportion of Portfolios')
+        .xAxisTitle('Performance')
+    //            .bins(d3.scale.linear().ticks(30))
     .bins(20)
         .plotFrequency(false)
-    //    .xMax(6).xMin(-6)
-    .height(300)
-        .width(700);
+        .yMax(0.45)
+        .height(300)
+        .width(commonChartWidth);
+
+    myHistogram.tickFormat(function (d) {
+        return d + '%';
+    })
+        .range([-10, 10])
+
+    myHistogram.yAxisTickFormat(function (d) {
+        return Math.round(d * 100, 0) + '%';
+    });
+
 
     var bubbleChartData = getEnhanceDataXY();
     console.log('enhance data', bubbleChartData);
@@ -86,28 +95,30 @@ define([
         .fontColor('white')
         .fontSize(20)
         .fontColor('#333');
-    
+
     legend.on('mouseover', function (d) {
-        console.log(d);
-        myHistogram.title('Return Distribution of ' + d.name)
-        drawHistogram(d.individualReturns);
+        drawHistogram(d.individualReturns, d.name);
     });
-    
+
     d3.select('#legend')
         .datum(bubbleChartData.slice().reverse())
         .call(legend);
 
 
-    var drawHistogram = function (histoData) {
-        d3.select("#histogram")
+    var drawHistogram = function (histoData, name) {
+        myHistogram.title('Distribution of ' + name + ' Product')
+        d3.select('#histogram')
             .datum(histoData)
             .call(myHistogram);
     };
 
     var drawInfoLegend = function () {
+        var xTranslate = legendMargin.left,
+            yTranslate = legendMargin.top;
         var svgContainer = d3.select('#infoLegend').append('svg')
-            .attr('width', 380)
-            .attr('height', 145);
+            .attr('width', 380 + xTranslate)
+            .attr('height', 145 + yTranslate);
+
 
         var jsonCircles = [{
                 'x_axis': 22,
@@ -132,21 +143,38 @@ define([
             .attr('r', function (d) {
                 return d.radius;
             })
+            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
             .style({
                 fill: fillColor,
                 opacity: opacity,
                 stroke: strokeColor
             });
 
-        var text1 = svgContainer.selectAll('text1')
-            .data([0])
+        //        var text1 = svgContainer.selectAll('text1')
+        //            .data([0])
+        //            .enter()
+        //            .append('text').classed('text1', true);
+        //
+        //        text1.attr('x', 48)
+        //            .attr('y', 29)
+        //            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
+        //            .text('Annualised Performance over previous 36 months');
+
+        var arr = ['Annualised Performance', 'over previous 36 months'];
+        var text3 = svgContainer.selectAll('text3')
+            .data(arr)
             .enter()
-            .append('text').classed('text1', true);
+            .append('text').classed('text3', true);
 
-        text1.attr('x', 48)
-            .attr('y', 29)
-            .text('Annualised Performance over previous 36 months');
-
+        text3.attr('x', 48)
+            .attr('y', 16)
+            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
+            .each(function (d, i) {
+                d3.select(this).append('tspan')
+                    .text(d)
+                    .attr('dy', i ? '1.2em' : 0)
+                    .attr('class', 'tspan' + i);
+            });
 
         var x = 22,
             y = 136;
@@ -158,6 +186,7 @@ define([
                 x2: x,
                 y2: y
             })
+            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
             .style({
                 stroke: fillColor,
                 'stroke-width': 3
@@ -170,21 +199,39 @@ define([
                 x2: x + 10,
                 y2: y
             })
+            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
             .style({
                 stroke: fillColor,
                 'stroke-width': 1
             });
 
-        var text2 = svgContainer.selectAll('text2')
-            .data([0])
-            .enter()
-            .append('text').classed('text2', true);
+//        var text2 = svgContainer.selectAll('text2')
+//            .data([0])
+//            .enter()
+//            .append('text').classed('text2', true);
+//
+//        text2.attr('x', 48)
+//            .attr('y', 98)
+//            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
+//            .text('Max. Drawdown over previous 36 months');
 
-        text2.attr('x', 48)
+         arr = ['Maximum Drawdown', 'over previous 36 months'];
+        var text4 = svgContainer.selectAll('text4')
+            .data(arr)
+            .enter()
+            .append('text').classed('text4', true);
+
+        text4.attr('x', 48)
             .attr('y', 98)
-            .text('Max. Drawdown over previous 36 months');
+            .attr('transform', 'translate(' + xTranslate + ', ' + yTranslate + ')')
+            .each(function (d, i) {
+                d3.select(this).append('tspan')
+                    .text(d)
+                    .attr('dy', i ? '1.2em' : 0)
+                    .attr('class', 'tspan' + i);
+            });
     };
 
     drawInfoLegend();
-    drawHistogram(bubbleChartData[2].individualReturns)
+    drawHistogram(bubbleChartData[2].individualReturns, 'Medium Risk')
 });
