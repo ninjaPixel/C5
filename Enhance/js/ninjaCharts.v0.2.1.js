@@ -1,3 +1,5 @@
+// version 0.2.1
+// further updates to the histogram
 // Version 0.2.0
 // added histogram
 // Version 0.1.3

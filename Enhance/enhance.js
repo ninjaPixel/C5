@@ -16,13 +16,13 @@ require.config({
         'dimple': 'js/dimple.v2.1.0.min',
         'enhanceCharts': 'js/enhanceCharts',
         'enhanceData': 'js/enhanceData',
-        'ninjaCharts.v0.2.0': 'js/ninjaCharts.v0.2.0'
+        'ninjaCharts.v0.2.1': 'js/ninjaCharts.v0.2.1'
     }
 });
 
 define([
     // Load our app module and pass it to our definition function
-    'd3', 'enhanceCharts', 'ninjaCharts.v0.2.0', 'enhanceData'
+    'd3', 'enhanceCharts', 'ninjaCharts.v0.2.1', 'enhanceData'
 ], function (d3, enhanceCharts, ninjaCharts, enhanceData) {
 
     var bubbleChart = d3.enhance.riskAndPerformanceChart();
